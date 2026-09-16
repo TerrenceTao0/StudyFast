@@ -11,7 +11,10 @@ class RegisterRequest(BaseModel):
 
 
 class UserResponse(BaseModel):
-    # Hashed password should not be exposed to user.
     id: int
     email: EmailStr
 
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str 
