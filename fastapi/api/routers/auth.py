@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 
 from database import get_db
 from models import User
-from schemas import RegisterRequest, UserResponse, LoginRequest
+from schemas import RegisterRequest, LoginRequest
 from hashing import hash_password, verify_password, create_access_token, decode_access_token
 
 ##

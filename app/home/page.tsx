@@ -6,7 +6,7 @@ import { useState } from "react"
 //
 
 export default function Home() {
-    const uploaded = [1]
+    const documents = []
 
     function EmptyUpload() {
         return (
@@ -29,7 +29,7 @@ export default function Home() {
     }
 
 
-    function MaterialCard(topic: string) {
+    function Document(topic: string) {
         return (
             <>
                 <button className={`
@@ -49,11 +49,8 @@ export default function Home() {
             <>
                 <div className="w-full h-screen flex justify-center items-center">
                     <div className="w-200 h-120 mt-15 border-black flex gap-5 border-1 p-5">
-                        {MaterialCard("+")}
-                        {MaterialCard("Linear Algebra")}
-                        {MaterialCard("Linear Algebra")}
-                        {MaterialCard("Linear Algebra")}
-                        {MaterialCard("Linear Algebra")}
+                        {Document("+")}
+                        
                     </div>
                 </div>
             </>
@@ -64,7 +61,7 @@ export default function Home() {
     return (
         <>
             <NavBar />
-            {uploaded.length == 0 ? <EmptyUpload /> : <GridLayout />}
+            {documents.length == 0 ? <EmptyUpload /> : <GridLayout />}
         </>
     )
 }

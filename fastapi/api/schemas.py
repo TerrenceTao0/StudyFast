@@ -10,11 +10,6 @@ class RegisterRequest(BaseModel):
     )
 
 
-class UserResponse(BaseModel):
-    id: int
-    email: EmailStr
-
-
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str 
