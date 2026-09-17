@@ -37,7 +37,7 @@ h1 {
   padding: 5px;
   cursor: pointer;
   color: white;
-  width: 205px;
+  width: 200px;
   height: 35px;
   display: flex;
   justify-content: center;
@@ -46,5 +46,6 @@ h1 {
 
 .button:hover {
   background-color: var(--primary);
+  width: 240px;
   color: white;
 }

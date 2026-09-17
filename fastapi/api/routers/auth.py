@@ -146,6 +146,16 @@ def get_current_user(
 @router.get("/account")
 def account(current_user: User = Depends(get_current_user)):
     return {
-        "id": current_user.id
+        "id": current_user.id,
+        "email": current_user.email
     }
+
+
+@router.post("/logout")
+def logout(response: Response):
+    response.delete_cookie(
+        key="access_token",
+        path="/"
+    )
+
 

@@ -25,8 +25,8 @@ function NavButton({ href, children }: NavButtonProps) {
 
 export default function NavBar() {
     return (
-        <div className="justify-center items-center w-full flex absolute bg-white border-black border-1">
-            <nav className="w-120 h-12 rounded-md flex gap-5 justify-center items-center">
+        <div className="justify-center items-center w-full flex absolute">
+            <nav className="w-120 h-12 rounded-md flex gap-5 justify-center items-center bg-white border-black border-1 top-3 absolute">
                 <NavButton href="/admin">Home</NavButton>
                 <NavButton href="/account">Account</NavButton>
                 <NavButton href="/settings">Settings</NavButton>
