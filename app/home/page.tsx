@@ -1,44 +1,161 @@
 "use client"
 
 import NavBar from "@/components/navbar"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 //
 
-export default function Home() {
-    const documents = []
+type DocumentData = {
+    id: number,
+    title: string, 
+    size_bytes: number
+}
+
+//
+
+export default function Home() { 
+    const [documents, setDocuments] = useState<DocumentData[]>([])
+
+    // Check user's uploaded documents at the start of page mount
+    useEffect(() => {
+        getDocuments()
+    }, [])
+
+    
+    async function getDocuments() {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/documents`,
+            {
+                "credentials": "include"
+            }
+        ) 
+
+
+        if (!response.ok) {
+            return 
+        }
+
+
+        const data = await response.json()
+        setDocuments(data)
+    }
+
+ 
+    async function uploadFile(event: React.ChangeEvent<HTMLInputElement>) {
+        const file = event.target.files?.[0] ?? null 
+
+        if (!file) {
+            return 
+        }
+
+
+        const formData = new FormData()
+        formData.append("file", file)
+
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/documents/upload`,
+            {
+                "method": "POST",
+                "credentials": "include",
+                "body": formData 
+            }
+        )
+
+
+        if (!response.ok) {
+            return
+        }
+        
+
+        getDocuments()
+    }
+
 
     function EmptyUpload() {
         return (
             <>
                 <div className="w-full h-screen flex justify-center items-center">
-                    <button className="transition-all hover:bg-gray-300 w-170 h-100 rounded-sm flex flex-col
-                        bg-gray-200 border-black border-1 justify-center items-center cursor-pointer
-                    ">
+                   <label
+                        htmlFor="file-upload"
+                        className="
+                            transition-all hover:bg-gray-300 w-170 h-100 rounded-sm
+                            flex flex-col bg-gray-200 border-black border-1 justify-center
+                            items-center relative cursor-pointer
+                        "
+                    >
+                        <input
+                            id="file-upload"
+                            type="file"
+                            accept="application/pdf"
+                            className="hidden"
+                            onChange={uploadFile}
+                        />
+
                         <p className="text-[30px] text-gray-700">
                             +
                         </p>
 
                         <p className="text-gray-500">
-                            Upload a pdf, docx, or txt to get started.
+                            Upload a PDF, DOCX, or TXT to get started.
                         </p>
-                    </button>
+                    </label>
                 </div>
             </>
         )
     }
 
 
-    function Document(topic: string) {
+    function AddDocument() {
+        return (
+            <label className="
+                transition-all hover:bg-primary hover:text-white w-50 h-30 rounded-sm 
+                bg-gray-200 border-black border-1 flex justify-center items-center 
+                cursor-pointer text-[30px] text-gray-500
+            ">
+                +
+
+                <input
+                    id="file-upload"
+                    type="file"
+                    accept=".pdf,.docx,.txt"
+                    className="hidden"
+                    onChange={uploadFile}
+                />
+            </label>
+        )
+    }
+
+
+    function Document({
+        title,
+        size_bytes
+    }: {
+        title: string,
+        size_bytes: number
+    }) {
         return (
             <>
-                <button className={`
-                    transition-all hover:bg-primary hover:text-white w-50 h-30 rounded-sm 
-                    bg-gray-200 border-black border-1 flex justify-center items-center 
-                    cursor-pointer ${topic == "+" && "text-[30px] text-gray-500"}
-                `}>
-                    {topic}
-                </button>
+                {title == "+" ? (
+                    <button className="
+                        transition-all hover:bg-primary hover:text-white w-50 h-30 rounded-sm 
+                        bg-gray-200 border-black border-1 flex justify-center items-center 
+                        cursor-pointer text-[30px] text-gray-500
+                    ">
+                        {title}
+                    </button>
+                ) : 
+                    <button className="
+                        transition-all hover:bg-primary hover:text-white w-50 h-30 rounded-sm 
+                        bg-gray-200 border-black border-1 flex justify-center items-center 
+                        cursor-pointer relative
+                    ">
+                        {title}
+
+                        <p className="absolute right-2 bottom-1 text-gray-500">
+                            {Math.round(size_bytes / 1024 / 1024 * 10) / 10} MB
+                        </p>
+                    </button>
+                }
             </>
         )
     }
@@ -47,10 +164,20 @@ export default function Home() {
     function GridLayout() {
         return (
             <>
-                <div className="w-full h-screen flex justify-center items-center">
-                    <div className="w-200 h-120 mt-15 border-black flex gap-5 border-1 p-5">
-                        {Document("+")}
-                        
+                <div className="w-full min-h-screen flex pt-20 pb-5 justify-center items-start">
+                    <div className="
+                        w-220 border-black grid grid-cols-4 
+                        gap-5 border-1 p-2 content-start min-h-120
+                    ">
+                        <AddDocument />
+
+                        {documents.map((document) => (
+                            <Document 
+                                key={document.id}
+                                title={document.title}
+                                size_bytes={document.size_bytes}
+                            />
+                        ))}
                     </div>
                 </div>
             </>
