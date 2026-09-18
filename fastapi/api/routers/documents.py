@@ -1,5 +1,9 @@
 from pathlib import Path
 from uuid import uuid4
+from rq import Retry
+
+from job_queue import document_queue
+from tasks import process_document
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from sqlalchemy import select 
@@ -110,6 +114,17 @@ def upload(
 
 
         raise
+
+
+    job = document_queue.enqueue(
+        process_document,
+        document.id,
+        job_timeout=300,
+        retry=Retry(
+            max=3,
+            interval=[10, 30, 60]
+        )
+    )
 
 
 @router.get("")
