@@ -54,7 +54,7 @@ class Document(Base):
         nullable=False,
         unique=True
     )
-    
+
     size_bytes: Mapped[int] = mapped_column(
         BigInteger,
         nullable=False
@@ -68,7 +68,7 @@ class Document(Base):
     title: Mapped[str] = mapped_column(
         String(20),
         nullable=False,
-        default="Processing..."
+        default="Pending..."
     )
 
 
