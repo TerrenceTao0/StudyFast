@@ -3,7 +3,7 @@ from uuid import uuid4
 from rq import Retry
 
 from job_queue import document_queue
-from tasks import process_document
+from worker.tasks import process_document
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from sqlalchemy import select 
@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import Document, User
 from routers.auth import get_current_user
+from services.document_processing import UPLOAD_PATH
 
 ##
 
@@ -20,7 +21,6 @@ router = APIRouter(
     tags=["documents"]
 )
 
-UPLOAD_PATH = Path(__file__).resolve().parent.parent / "uploads"
 MAX_FILE_SIZE = 20 * 1024 * 1024  # 20 MB
 ALLOWED_EXTENSIONS = {".pdf", ".docx", ".txt"}
 
@@ -54,6 +54,7 @@ def upload(
 
     # Store document under a unique user folder with name set to user id. 
     # User folder must be dynamically created if it does not exist (first time uploading).
+    # Github does not track empty folders so this is also needed to dynamically create "uploads" folder.
     user_directory = (
         UPLOAD_PATH / str(current_user.id)
     )
@@ -116,7 +117,8 @@ def upload(
         raise
 
 
-    job = document_queue.enqueue(
+    # Let AI Document processing be done in the background by a worker as it's expensive.
+    document_queue.enqueue(
         process_document,
         document.id,
         job_timeout=300,

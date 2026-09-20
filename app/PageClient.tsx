@@ -41,10 +41,10 @@ export default function LandingPage() {
         }
       )
 
+
       const status = response.status 
 
       if (response.ok) {
-        // Account made succesfully, prompt user to login now.
         router.push("/login")
       }
       else if (status == 409) {
@@ -56,6 +56,8 @@ export default function LandingPage() {
         setPassword("")
         setPasswordError("A server error occured.")
       }
+
+      
     } 
     catch {
       setEmail("")

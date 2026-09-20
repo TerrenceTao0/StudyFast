@@ -45,7 +45,6 @@ export default function Home() {
         const code = response.status 
 
         if (response.ok) {
-            // User succesfully logged in
             router.push("/home")
         }
         else if (code == 401) {
@@ -56,6 +55,8 @@ export default function Home() {
             setPassword("")
             setPasswordError("A server error occured.")
         }
+
+        
     } 
     catch {
         setPassword("")
