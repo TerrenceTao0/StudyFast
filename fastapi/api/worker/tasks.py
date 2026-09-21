@@ -1,5 +1,5 @@
 from database import SessionLocal
-from models import Document, Topic, Flashcard, Question
+from models import Document, Topic, Flashcard, Question, TopicMastery
 from services import document_processing
 
 ##
@@ -63,14 +63,24 @@ def process_document(document_id: int):
         # Convert the nested AI response into related database objects.
         for i, topic_data in enumerate(ai_response["topics"]):
             topic = construct_topic(i, topic_data)
+
+            # Create the user's mastery record for this topic.
+            # Only the first topic starts unlocked.
+            mastery = TopicMastery(
+                user_id=document.user_id,
+                status="unlocked" if i == 0 else "locked"
+            )
+
+            topic.mastery_records.append(mastery)
             document.topics.append(topic)
 
 
         document.status = "ready"
         document.title = ai_response["title"]
 
-        # Save the generated study material as one transaction.
-        # If error occurs during construction, document rolls back to pending with no partially generated material.
+        # Commit all generated study material together. 
+        # If construction fails before this commit, no partially generated material is saved.
+        # Status will also become "pending" so that processing can try again.
         db.commit()
 
     except Exception:

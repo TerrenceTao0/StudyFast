@@ -31,9 +31,8 @@ export function ProgressBar({
 
             <p
                 className="
-                    absolute inset-0 border-gray-500 border-1
-                    flex items-center justify-center 
-                    text-xs font-semibold
+                    absolute inset-0 border-black border-1 rounded-sm flex items-center 
+                    justify-center text-xs font-semibold
                 "
             >
                 {progress}%

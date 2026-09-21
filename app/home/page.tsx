@@ -2,28 +2,23 @@
 
 import NavBar from "@/components/navbar"
 import { useEffect, useState } from "react"
-import { redirect } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { ProgressBar } from "@/components/progressBar"
  
 //
-
-type TopicData = {
-    id: number
-    name: string
-    order_index: number
-}
-
 
 type DocumentData = {
     id: number,
     title: string, 
     size_bytes: number,
     status: string,
-    topics: TopicData[]
+    mastery: number
 }
 
 //
 
 export default function Home() { 
+    const router = useRouter()
     const [documents, setDocuments] = useState<DocumentData[]>([])
 
     useEffect(() => {
@@ -140,7 +135,7 @@ export default function Home() {
     function AddDocument() {
         return (
             <label className="
-                transition-all hover:bg-primary hover:text-white w-50 h-30 rounded-sm 
+                transition-all hover:bg-primary hover:text-white w-50 h-34.5 rounded-sm 
                 bg-gray-200 border-black border-1 flex justify-center items-center 
                 cursor-pointer text-[30px] text-gray-500
             ">
@@ -165,19 +160,21 @@ export default function Home() {
     }) {
         return (
             <>
-                {document.title == "+" ? (
-                    <button className="
-                        transition-all hover:bg-primary hover:text-white w-50 h-30 rounded-sm 
-                        bg-gray-200 border-black border-1 flex justify-center items-center 
-                        cursor-pointer text-[30px] text-gray-500
-                    ">
-                        {document.title}
-                    </button>
-                ) : 
+                <div className="flex flex-col gap-0.5">
+                    {/* Mastery progress bar may be mistaken for a loading bar so hide it until document is ready. */}
+                    {document.status != "ready" ? (
+                        <div className="h-4">
+
+                        </div>
+                    ): (
+                        <ProgressBar progress={document.mastery}/>
+                    )}
+
+
                     <button 
                         onClick={() => {
                             if (document.status === "ready") {
-                                redirect(`/documents/${document.id}/topics`)
+                                router.push(`/documents/${document.id}/topics`)
                             }
                         }}
                         className="
@@ -188,11 +185,11 @@ export default function Home() {
                     >
                         {document.title}
 
-                        <p className="absolute right-2 bottom-1 text-gray-500">
+                        <p className="absolute right-2 bottom-1 text-gray-400 text-sm">
                             {Math.round(document.size_bytes / 1024 / 1024 * 10) / 10} MB
                         </p>
                     </button>
-                }
+                </div>
             </>
         )
     }

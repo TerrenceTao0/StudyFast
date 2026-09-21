@@ -12,13 +12,15 @@ type TopicData = {
     id: number
     name: string
     order_index: number
+    mastery: number
+    status: string
 }
 
 
 type DocumentData = {
-    id: number
     title: string
     topics: TopicData[]
+    mastery: number
 }
 
 //
@@ -60,18 +62,37 @@ export default function Home() {
         topic: TopicData
     }) {
         return (
-            <>
-                <Link 
-                    href={`/documents/${documentId}/topics/${topic.id}`}
-                    className="
-                        transition-all hover:bg-primary hover:text-white w-50 h-30 rounded-sm 
-                        bg-gray-200 border-black border-1 flex justify-center items-center 
-                        cursor-pointer relative text-center
-                    "
-                >
-                    {topic.name}
-                </Link>
-            </>
+            <div className="flex flex-col gap-0.5">
+                <ProgressBar progress={topic.mastery} />
+
+                {topic.status == "locked" ? (
+                    <button 
+                        className="
+                        w-full h-30 rounded-sm bg-gray-100 border border-gray-300 text-gray-400
+                        flex flex-col justify-center items-center text-center cursor-not-allowed
+                        select-none
+                    ">
+                        <p>
+                            {topic.name}
+                        </p>
+
+                        <span className="text-xs mt-2 text-gray-400">
+                            Complete the previous topic
+                        </span>
+                    </button>
+                ): (
+                    <Link 
+                        href={`/documents/${documentId}/topics/${topic.id}`}
+                        className="
+                            transition-all hover:bg-primary hover:text-white w-50 h-30 rounded-sm 
+                            bg-gray-200 border-black border-1 flex justify-center items-center 
+                            cursor-pointer relative text-center
+                        "
+                    >
+                        {topic.name}
+                    </Link>
+                )}
+            </div>
         )
     }
 
@@ -131,7 +152,7 @@ export default function Home() {
                     </div>
 
                     <ProgressBar
-                        progress={10}
+                        progress={document?.mastery || 0}
                         className="w-full"
                     />
                 </div>

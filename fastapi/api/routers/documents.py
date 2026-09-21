@@ -10,7 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from database import get_db
-from models import Document, User
+from models import Document, User, Topic
 from routers.auth import get_current_user
 from services.document_processing import UPLOAD_PATH
 
@@ -21,10 +21,48 @@ router = APIRouter(
     tags=["documents"]
 )
 
-MAX_FILE_SIZE = 20 * 1024 * 1024  # 20 MB
+MAX_FILE_SIZE = 40 * 1024 * 1024  # 40 MB
 ALLOWED_EXTENSIONS = {".pdf", ".docx", ".txt"}
 
 ##
+
+def get_topics_and_document_mastery(current_user, document):
+    topics = []
+    document_mastery = 0 
+
+    for topic in document.topics:
+        mastery_record = next(
+            (
+                record
+                for record in topic.mastery_records
+                if record.user_id == current_user.id
+            ),
+            None
+        )
+
+
+        if (not mastery_record):
+            continue 
+
+
+        mastery = mastery_record.mastery
+        document_mastery += mastery 
+
+        topics.append({
+            "id": topic.id,
+            "name": topic.name,
+            "order_index": topic.order_index,
+            "mastery": mastery,
+            "status": mastery_record.status
+        })
+
+
+    if (document.topics):
+        document_mastery = round(document_mastery / len(topics), 1)
+
+
+    return topics, document_mastery
+    
 
 @router.post(
     "/upload",
@@ -136,13 +174,32 @@ def get_documents(
 ):
     query = (
         select(Document)
+        .options(
+            selectinload(Document.topics)
+            .selectinload(Topic.mastery_records)
+        )
         .where(Document.user_id == current_user.id)
         .order_by(Document.uploaded_at.desc())
     )
 
     documents = db.scalars(query).all()
+    documents_data = []
 
-    return documents 
+    for document in documents:
+        topics, document_mastery = get_topics_and_document_mastery(current_user, document)
+
+        data = {
+            "id": document.id,
+            "title": document.title,
+            "size_bytes": document.size_bytes,
+            "status": document.status,
+            "mastery": document_mastery
+        }
+
+        documents_data.append(data)
+
+
+    return documents_data 
 
 
 @router.get("/{document_id}")
@@ -155,6 +212,7 @@ def get_document(
         select(Document)
         .options(
             selectinload(Document.topics)
+            .selectinload(Topic.mastery_records)
         )
         .where(
             Document.user_id == current_user.id,
@@ -171,5 +229,11 @@ def get_document(
         )
 
 
-    return document
+    topics, document_mastery = get_topics_and_document_mastery(current_user, document)
+
+    return {
+        "title": document.title,
+        "topics": topics,
+        "mastery": document_mastery
+    }
 

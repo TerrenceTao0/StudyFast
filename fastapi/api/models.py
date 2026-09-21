@@ -1,7 +1,7 @@
 from datetime import datetime
 from database import Base
 
-from sqlalchemy import String, ForeignKey, DateTime, BigInteger, func, Text, JSON
+from sqlalchemy import String, ForeignKey, DateTime, BigInteger, func, Text, JSON, Float, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 ## 
@@ -29,6 +29,50 @@ class User(Base):
     # User -< many Document
     documents: Mapped[list["Document"]] = relationship(
         back_populates="user"
+    )
+
+
+class TopicMastery(Base):
+    __tablename__ = "topic_mastery"
+
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "topic_id",
+            name="user_topic_mastery"
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(
+        primary_key=True
+    )
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"),
+        nullable=False
+    )
+
+    topic_id: Mapped[int] = mapped_column(
+        ForeignKey("topics.id"),
+        nullable=False
+    )
+
+
+    # Statuses - locked, unlocked, mastered
+    status: Mapped[str] = mapped_column(
+        String(20),
+        nullable=False,
+        default="locked"
+    )
+
+    mastery: Mapped[float] = mapped_column(
+        Float,
+        nullable=False,
+        default=0
+    )
+
+    topic: Mapped["Topic"] = relationship(
+        back_populates="mastery_records"
     )
 
 
@@ -128,6 +172,13 @@ class Topic(Base):
 
     # Topic -< Many Question
     questions: Mapped[list["Question"]] = relationship(
+        back_populates="topic",
+        cascade="all, delete-orphan"
+    )
+
+
+    # Topic -< Many TopicMastery Records
+    mastery_records: Mapped[list["TopicMastery"]] = relationship(
         back_populates="topic",
         cascade="all, delete-orphan"
     )
