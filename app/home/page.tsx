@@ -26,10 +26,32 @@ type DocumentData = {
 export default function Home() { 
     const [documents, setDocuments] = useState<DocumentData[]>([])
 
-    // Check user's uploaded documents at the start of page mount
     useEffect(() => {
         getDocuments()
     }, [])
+
+    // Poll user's documents so they can see the status of their documents live.
+    useEffect(() => {
+        const processing = documents.some(
+            (document) => 
+                document.status == "pending" ||
+                document.status == "processing"
+        )
+
+
+        if (!processing) {
+            return 
+        }
+
+
+        const timeout = setTimeout(() => {
+            getDocuments()
+        }, 2000)
+
+
+        return () => clearTimeout(timeout)
+
+    }, [documents])
 
     
     async function getDocuments() {

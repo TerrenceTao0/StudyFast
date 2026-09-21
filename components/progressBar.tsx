@@ -1,15 +1,44 @@
-export function ProgressBar(progress: number) {
+export function ProgressBar({
+    progress,
+    className
+}: {
+    progress: number
+    className?: string
+}) {
     return (
-        <>
-            <div className="w-150 h-5 bg-foreground border-[1.5px] relative">
-                <p className="w-full h-full absolute flex justify-center items-center text-white">
-                    <b>
-                        {progress}%
-                    </b>
-                </p>
+        <div
+            className={`
+                h-4
+                bg-gray-200
+                rounded-sm
+                overflow-hidden
+                relative
+                border border-gray-300
+                ${className ?? ""}
+            `}
+        >
+            <div
+                className="
+                    h-full
+                    bg-primary
+                    rounded-sm
+                    transition-all
+                "
+                style={{
+                    width: `${progress}%`
+                }}
+            />
 
-                <div className={`w-[${progress}%] h-full bg-primary`}></div>
-            </div> 
-        </>
+            <p
+                className="
+                    absolute inset-0 border-gray-500 border-1
+                    flex items-center justify-center 
+                    text-xs font-semibold
+                "
+            >
+                {progress}%
+            </p>
+        </div>
     )
 }
+

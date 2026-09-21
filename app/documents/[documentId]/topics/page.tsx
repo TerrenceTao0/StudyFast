@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
+
+import { ProgressBar } from "@/components/progressBar"
  
 //
 
@@ -109,9 +111,38 @@ export default function Home() {
     }
 
 
+    function Header() {
+        return (
+            <div className="w-full flex justify-center absolute mt-3">
+                <div className="w-220">
+                    <div className="flex items-center justify-between mb-1">
+                        <Link
+                            href="/home"
+                            className="
+                                px-5 py-2
+                                bg-foreground text-white
+                                rounded-md
+                                transition-all
+                                hover:bg-primary
+                            "
+                        >
+                            Back
+                        </Link>
+                    </div>
+
+                    <ProgressBar
+                        progress={10}
+                        className="w-full"
+                    />
+                </div>
+            </div>
+        )
+    }
+
+
     return (
         <>
-            <GoBack />
+            <Header />
             {document && <GridLayout />}
         </>
     )
