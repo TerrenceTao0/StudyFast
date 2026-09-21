@@ -6,8 +6,8 @@ from job_queue import document_queue
 from worker.tasks import process_document
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
-from sqlalchemy import select 
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.orm import Session, selectinload
 
 from database import get_db
 from models import Document, User
@@ -143,4 +143,33 @@ def get_documents(
     documents = db.scalars(query).all()
 
     return documents 
+
+
+@router.get("/{document_id}")
+def get_document(
+    document_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    query = (
+        select(Document)
+        .options(
+            selectinload(Document.topics)
+        )
+        .where(
+            Document.user_id == current_user.id,
+            Document.id == document_id
+        )
+    )
+
+    document = db.scalar(query)
+
+    if (document is None):
+        raise HTTPException(
+            status_code=404,
+            detail="Document not found."
+        )
+
+
+    return document
 

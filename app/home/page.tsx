@@ -2,13 +2,23 @@
 
 import NavBar from "@/components/navbar"
 import { useEffect, useState } from "react"
-
+import { redirect } from "next/navigation"
+ 
 //
+
+type TopicData = {
+    id: number
+    name: string
+    order_index: number
+}
+
 
 type DocumentData = {
     id: number,
     title: string, 
-    size_bytes: number
+    size_bytes: number,
+    status: string,
+    topics: TopicData[]
 }
 
 //
@@ -127,32 +137,37 @@ export default function Home() {
 
 
     function Document({
-        title,
-        size_bytes
+        document
     }: {
-        title: string,
-        size_bytes: number
+        document: DocumentData
     }) {
         return (
             <>
-                {title == "+" ? (
+                {document.title == "+" ? (
                     <button className="
                         transition-all hover:bg-primary hover:text-white w-50 h-30 rounded-sm 
                         bg-gray-200 border-black border-1 flex justify-center items-center 
                         cursor-pointer text-[30px] text-gray-500
                     ">
-                        {title}
+                        {document.title}
                     </button>
                 ) : 
-                    <button className="
-                        transition-all hover:bg-primary hover:text-white w-50 h-30 rounded-sm 
-                        bg-gray-200 border-black border-1 flex justify-center items-center 
-                        cursor-pointer relative
-                    ">
-                        {title}
+                    <button 
+                        onClick={() => {
+                            if (document.status === "ready") {
+                                redirect(`/documents/${document.id}/topics`)
+                            }
+                        }}
+                        className="
+                            transition-all hover:bg-primary hover:text-white w-50 h-30 rounded-sm 
+                            bg-gray-200 border-black border-1 flex justify-center items-center 
+                            cursor-pointer relative
+                        "
+                    >
+                        {document.title}
 
                         <p className="absolute right-2 bottom-1 text-gray-500">
-                            {Math.round(size_bytes / 1024 / 1024 * 10) / 10} MB
+                            {Math.round(document.size_bytes / 1024 / 1024 * 10) / 10} MB
                         </p>
                     </button>
                 }
@@ -174,8 +189,7 @@ export default function Home() {
                         {documents.map((document) => (
                             <Document 
                                 key={document.id}
-                                title={document.title}
-                                size_bytes={document.size_bytes}
+                                document={document}
                             />
                         ))}
                     </div>
@@ -188,6 +202,7 @@ export default function Home() {
     return (
         <>
             <NavBar />
+
             {documents.length == 0 ? <EmptyUpload /> : <GridLayout />}
         </>
     )
