@@ -8,21 +8,13 @@ export function ProgressBar({
     return (
         <div
             className={`
-                h-4
-                bg-gray-200
-                rounded-sm
-                overflow-hidden
-                relative
-                border border-gray-300
+                h-4 bg-gray-200 rounded-sm overflow-hidden relative border border-gray-300
                 ${className ?? ""}
             `}
         >
             <div
                 className="
-                    h-full
-                    bg-primary
-                    rounded-sm
-                    transition-all
+                    h-full bg-primary rounded-sm transition-all
                 "
                 style={{
                     width: `${progress}%`

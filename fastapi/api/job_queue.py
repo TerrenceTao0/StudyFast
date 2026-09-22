@@ -17,6 +17,6 @@ redis_connection = Redis.from_url(
 document_queue = Queue(
     "documents",
     connection=redis_connection,
-    default_timeout=300
+    default_timeout=600
 )
 

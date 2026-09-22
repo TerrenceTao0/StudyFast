@@ -185,7 +185,7 @@ export default function Home() {
                     >
                         {document.title}
 
-                        <p className="absolute right-2 bottom-1 text-gray-400 text-sm">
+                        <p className="absolute right-1 bottom-0 text-gray-400 text-sm">
                             {Math.round(document.size_bytes / 1024 / 1024 * 10) / 10} MB
                         </p>
                     </button>
@@ -200,8 +200,8 @@ export default function Home() {
             <>
                 <div className="w-full min-h-screen flex pt-20 pb-5 justify-center items-start">
                     <div className="
-                        w-220 border-black grid grid-cols-4 
-                        gap-5 border-1 p-2 content-start min-h-120
+                        w-220 grid grid-cols-4 
+                        gap-5 p-2 content-start min-h-120
                     ">
                         <AddDocument />
 

@@ -5,6 +5,7 @@ import { useParams } from "next/navigation"
 import Link from "next/link"
 
 import { ProgressBar } from "@/components/progressBar"
+import { getDocument } from "@/lib/document"
  
 //
 
@@ -23,6 +24,13 @@ type DocumentData = {
     mastery: number
 }
 
+const positions = [
+    0,
+    96,
+    0,
+    -96
+]
+
 //
 
 export default function Home() { 
@@ -33,44 +41,63 @@ export default function Home() {
 
     // Check user's uploaded documents at the start of page mount
     useEffect(() => {
-        getDocument()
-    }, [])
-
-    
-    async function getDocument() {
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/documents/${documentId}`,
-            {
-                "credentials": "include"
+        async function get() {
+            const data = await getDocument(documentId)
+            
+            if (data) {
+                setDocument(data)
             }
-        ) 
-
-
-        if (!response.ok) {
-            return 
         }
 
 
-        const data = await response.json()
-        setDocument(data)
-    }
-       
+        get()
+    }, [])
 
+    
     function Topic({
-        topic
+        topic,
+        index,
+        isLast
     }: {
-        topic: TopicData
+        topic: TopicData,
+        index: number,
+        isLast: boolean
     }) {
+        const currentX = positions[index % positions.length]
+        const nextX = positions[(index + 1) % positions.length]
+
+        const differenceX = nextX - currentX
+
         return (
-            <div className="flex flex-col gap-0.5">
+            <div 
+                className="flex flex-col gap-0.5 relative"
+                style={{
+                    transform: `translateX(${currentX}px)`
+                }}
+            >
+                {!isLast && (
+                    <div
+                        className={`
+                            absolute top-20 left-1/2 w-1 h-40 bg-gray-300 
+                            origin-top ${topic.status == "unlocked" && "border-black border-1"}
+                        `}
+                        style={{
+                            transform: `
+                                translateX(-50%)
+                                rotate(${differenceX > 0 ? "-35deg" : differenceX < 0 ? "35deg" : "0deg"})
+                            `
+                        }}
+                    />
+                )}
+
                 <ProgressBar progress={topic.mastery} />
 
                 {topic.status == "locked" ? (
                     <button 
                         className="
-                        w-full h-30 rounded-sm bg-gray-100 border border-gray-300 text-gray-400
+                        w-50 h-30 rounded-sm bg-gray-100 border border-gray-300 text-gray-400
                         flex flex-col justify-center items-center text-center cursor-not-allowed
-                        select-none
+                        select-none z-2
                     ">
                         <p>
                             {topic.name}
@@ -86,7 +113,7 @@ export default function Home() {
                         className="
                             transition-all hover:bg-primary hover:text-white w-50 h-30 rounded-sm 
                             bg-gray-200 border-black border-1 flex justify-center items-center 
-                            cursor-pointer relative text-center
+                            cursor-pointer relative text-center z-2 
                         "
                     >
                         {topic.name}
@@ -97,39 +124,22 @@ export default function Home() {
     }
 
 
-    function GridLayout() {
-        return (
-            <>
-                <div className="w-full min-h-screen flex pt-20 pb-5 justify-center items-start">
-                    <div className="
-                        w-220 border-black grid grid-cols-4 
-                        gap-5 border-1 p-2 content-start min-h-120
-                    ">
-                        {document?.topics.map((topic) => (
-                            <Topic 
-                                key={topic.id}
-                                topic={topic}
-                            />
-                        ))}
-                    </div>
-                </div>
-            </>
-        )
-    }
-
-
-    function GoBack() {
-        return (
-            <div className="absolute w-full min-h-screen flex mt-8">
-                <Link 
-                    href="/home"
-                    className="button translate-x-47 transition-all"
-                >
-                    Back
-                </Link>
+function PathLayout() {
+    return (
+        <div className="w-full min-h-screen flex justify-center pt-24 pb-20">
+            <div className="w-150 flex flex-col items-center gap-10">
+                {document?.topics.map((topic, index) => (
+                    <Topic
+                        key={topic.id}
+                        topic={topic}
+                        index={index}
+                        isLast={index==document.topics.length-1}
+                    />
+                ))}
             </div>
-        )
-    }
+        </div>
+    )
+}
 
 
     function Header() {
@@ -164,7 +174,7 @@ export default function Home() {
     return (
         <>
             <Header />
-            {document && <GridLayout />}
+            {document && <PathLayout />}
         </>
     )
 }

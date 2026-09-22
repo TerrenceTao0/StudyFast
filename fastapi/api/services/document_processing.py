@@ -1,11 +1,11 @@
 from pathlib import Path
+import re
+import json 
 
 from pypdf import PdfReader
 from docx import Document as DocxDocument
 
 from openai import OpenAI
-
-import json 
 
 ##
 
@@ -13,6 +13,16 @@ UPLOAD_PATH = Path(__file__).resolve().parent.parent / "uploads"
 client = OpenAI()
 
 ##
+
+def clean_text(text: str):
+    # Replace repeated spaces/tabs with one space
+    text = re.sub(r"[ \t]+", " ", text)
+
+    # Replace 3+ newlines with 2
+    text = re.sub(r"\n{3,}", "\n\n", text)
+
+    return text.strip()
+
 
 def extract_pdf(file_path: Path) -> str:
     reader = PdfReader(file_path)
@@ -53,17 +63,21 @@ def extract_txt(file_path: Path) -> str:
 
 def extract_text(file_path: Path) -> str:
     extension = file_path.suffix.lower()
+    text = None
 
     if (extension == ".pdf"):
-        return extract_pdf(file_path)
+        text = extract_pdf(file_path)
+
+    elif (extension == ".docx"):
+        text = extract_docx(file_path)
+
+    elif (extension == ".txt"):
+        text = extract_txt(file_path)
 
 
-    if (extension == ".docx"):
-        return extract_docx(file_path)
-
-
-    if (extension == ".txt"):
-        return extract_txt(file_path)
+    if (text):
+        # Clean the text to save on context window and speed up processing time.
+        return clean_text(text)
 
 
     raise ValueError(
@@ -86,9 +100,9 @@ def analyze(text: str) -> dict:
             1. A concise descriptive title that cannot exceed 100 characters.
             2. A list of the main topics covered.
             3. Flashcards covering important facts, definitions, concepts, formulas, and relationships.
-            4. A reusable question bank for practice sessions.
+            4. A large and comprehensive question bank.
 
-            Topic ordering requirements:
+            Topic requirements:
             - Order topics in a logical learning progression from foundational concepts to more advanced concepts.
             - Earlier topics should contain prerequisite knowledge needed to understand later topics.
             - Do not place an advanced topic before a simpler prerequisite topic.
@@ -98,13 +112,16 @@ def analyze(text: str) -> dict:
             - For example, basic algebra should appear before calculus if calculus depends on that algebraic knowledge.
             - Keep closely related topics together.
             - Avoid duplicate or overlapping topic names.
+            - Make topic generation as granular as possible. 
+            - Each topic should only focus on one thing. For example, integration shouldn't be 1 topic, instead, integration by parts should be a topic and then integration by substitution should be another topic.
 
             Study material requirements:
             - Base all generated content on the supplied material.
             - Do not invent facts that are not supported by the material.
             - Cover the material broadly rather than focusing heavily on one section.
-            - Avoid duplicate or near-duplicate flashcards and questions.
+            - Avoid duplicate or near-duplicate flashcards.
             - Make flashcards concise and useful for active recall.
+            - Each topic should have exactly 10 flashcards.
             - Associate each flashcard and question with one of the generated topics.
             - Questions should test understanding rather than merely copy sentences from the text.
             - Include a mixture of easy, medium, and hard questions.
@@ -113,9 +130,39 @@ def analyze(text: str) -> dict:
             - Exactly one option for the question must be correct.
             - The other three answer options should be plausible but incorrect.
             - Include a short explanation for the answer for every question.
+
+            Formatting rule:
+            - Put any literal term, vocabulary word, phrase, symbol, command, or expression being discussed in quotation marks.
+            - Example: What does "desu" mean?
+            - Example: What does "photosynthesis" refer to?
+            - Example: What does the command "git status" do?
+
+            LANGUAGE SCRIPT FORMATTING — REQUIRED
+            For languages whose normal writing system is non-Latin:
+
+            Every romanized word or phrase that represents the target language MUST
+            use this exact syntax:
+
+            [[native script|romanization]]
+
+            There must NEVER be bare romanization of a target-language word anywhere
+            in the flashcard, including:
+            - inside quotations
+            - inside example sentences
+            - inside parentheses
+            - when discussing grammar particles
+            - when the entire example sentence is romanized
+
+            The romanization is always the main displayed text.
+            The native script is always the annotation.
+
+            Correct:
+            What is the role of [[は|wa]] in
+            "[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]"?
         """,
 
-        input=text[:100_000],
+        # Max context window is 1M tokens 
+        input=text[:1_000_000],
 
         text={
             "format": {

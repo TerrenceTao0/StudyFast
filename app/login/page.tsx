@@ -31,12 +31,12 @@ export default function Home() {
             {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                  "Content-Type": "application/json",
                 },
                 credentials: "include",
                 body: JSON.stringify({
-                    email,
-                    password
+                  email,
+                  password
                 })
             }
         )
@@ -45,22 +45,22 @@ export default function Home() {
         const code = response.status 
 
         if (response.ok) {
-            router.push("/home")
+          router.push("/home")
         }
         else if (code == 401) {
-            setPassword("")
-            setPasswordError("Email or password was incorrect.")
+          setPassword("")
+          setPasswordError("Email or password was incorrect.")
         }
         else {
-            setPassword("")
-            setPasswordError("A server error occured.")
+          setPassword("")
+          setPasswordError("A server error occured.")
         }
 
         
     } 
     catch {
-        setPassword("")
-        setPasswordError("A server error occured.")
+      setPassword("")
+      setPasswordError("A server error occured.")
     }
 
 

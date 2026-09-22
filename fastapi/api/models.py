@@ -213,6 +213,41 @@ class Flashcard(Base):
     )
 
 
+    # Flashcard -< Many FlashcardProgress
+    flashcard_progress: Mapped[list["FlashcardProgress"]] = relationship(
+        back_populates="flashcard",
+        cascade="all, delete-orphan"
+    )
+
+
+class FlashcardProgress(Base):
+    __tablename__ = "flashcard_progress"
+
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "flashcard_id",
+            name="user_flashcard_progress"
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id")
+    )
+
+    flashcard_id: Mapped[int] = mapped_column(
+        ForeignKey("flashcards.id")
+    )
+
+    fsrs_data: Mapped[str] = mapped_column(Text)
+
+    flashcard: Mapped["Flashcard"] = relationship(
+        back_populates="flashcard_progress"
+    )
+
+
 class Question(Base):
     __tablename__ = "questions"
 
