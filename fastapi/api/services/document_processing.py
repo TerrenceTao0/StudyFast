@@ -94,74 +94,184 @@ def analyze(text: str) -> dict:
         model="gpt-5.6-luna",
 
         instructions="""
-            You analyze educational study materials.
+            You analyze educational study materials and generate structured study content.
+
+            Your job is to identify the important knowledge in the supplied material
+            and turn it into a logical learning progression with useful flashcards
+            and multiple-choice questions.
 
             Generate:
-            1. A concise descriptive title that cannot exceed 100 characters.
-            2. A list of the main topics covered.
-            3. Flashcards covering important facts, definitions, concepts, formulas, and relationships.
-            4. A large and comprehensive question bank.
+            1. A concise descriptive title, maximum 100 characters.
+            2. A list of granular topics covered by the material.
+            3. Exactly 10 flashcards for each topic.
+            4. Exactly 35 multiple-choice question for each topic.
 
-            Topic requirements:
-            - Order topics in a logical learning progression from foundational concepts to more advanced concepts.
-            - Earlier topics should contain prerequisite knowledge needed to understand later topics.
+            TOPIC REQUIREMENTS
+
+            - Order topics in a logical learning progression from foundational concepts
+            to more advanced concepts.
+            - Earlier topics should contain prerequisite knowledge needed to understand
+            later topics.
             - Do not place an advanced topic before a simpler prerequisite topic.
-            - When the source material itself follows a sensible teaching order, preserve that order.
-            - If the source material is poorly ordered, reorder the topics into a more pedagogically appropriate sequence.
-            - Prefer conceptual dependency over the order in which keywords happen to appear in the document.
-            - For example, basic algebra should appear before calculus if calculus depends on that algebraic knowledge.
-            - Keep closely related topics together.
-            - Avoid duplicate or overlapping topic names.
-            - Make topic generation as granular as possible. 
-            - Each topic should only focus on one thing. For example, integration shouldn't be 1 topic, instead, integration by parts should be a topic and then integration by substitution should be another topic.
+            - When the source material already follows a sensible teaching order,
+            preserve that order.
+            - If the material is poorly ordered, reorganize the topics into a more
+            pedagogically useful sequence.
+            - Prefer conceptual dependency over the order in which keywords happen
+            to appear.
+            - Keep closely related topics near each other.
+            - Avoid duplicate or heavily overlapping topic names.
+            - Make topics as granular as reasonably possible.
+            - Each topic should focus on one independently learnable concept, skill,
+            rule, method, or idea.
+            - Avoid broad chapter-sized topics when they can be split into smaller
+            meaningful topics.
+            - Example:
+            Do not use one broad topic called "Integration" if the material separately
+            teaches integration by substitution, integration by parts, and partial
+            fractions. Those should be separate topics.
 
-            Study material requirements:
+            STUDY MATERIAL REQUIREMENTS
+
             - Base all generated content on the supplied material.
-            - Do not invent facts that are not supported by the material.
-            - Cover the material broadly rather than focusing heavily on one section.
+            - Cover the material broadly rather than focusing too heavily on one section.
+            - Prioritize knowledge that is useful to remember, understand, or apply.
+            - Avoid trivial or incidental details unless they are important to the
+            subject of the material.
             - Avoid duplicate or near-duplicate flashcards.
-            - Make flashcards concise and useful for active recall.
-            - Each topic should have exactly 10 flashcards.
-            - Associate each flashcard and question with one of the generated topics.
-            - Questions should test understanding rather than merely copy sentences from the text.
+            - Make flashcards concise and suitable for active recall.
+            - Each topic must have exactly 10 flashcards.
+            - Associate every flashcard and every question with exactly one generated topic.
+            - Questions should test understanding, application, recognition, or recall,
+            rather than merely copy sentences from the source.
             - Include a mixture of easy, medium, and hard questions.
-            - Every question must be multiple-choice.
-            - Provide exactly four distinct and plausible answer options.
-            - Exactly one option for the question must be correct.
-            - The other three answer options should be plausible but incorrect.
-            - Include a short explanation for the answer for every question.
+            - Every question must have exactly four distinct answer options.
+            - Generate exactly 35 questions per topic. 
+            Each question does not have to be entirely unique, you can generate different variations of the same underlying question. 
+            - Exactly one answer option must be correct.
+            - Incorrect options should be plausible enough to require actual knowledge, 
+            but must still be clearly wrong.
+            - Every question must include a short explanation of why the correct answer is correct.
 
-            Formatting rule:
-            - Put any literal term, vocabulary word, phrase, symbol, command, or expression being discussed in quotation marks.
-            - Example: What does "desu" mean?
-            - Example: What does "photosynthesis" refer to?
-            - Example: What does the command "git status" do?
+            GENERAL FORMATTING RULES
 
-            LANGUAGE SCRIPT FORMATTING — REQUIRED
-            For languages whose normal writing system is non-Latin:
+            - Put ordinary literal terms, vocabulary words, phrases, symbols, commands,
+            or expressions in quotation marks when they are being explicitly discussed.
+            - Examples:
+            - What does "photosynthesis" refer to?
+            - What does the command "git status" do?
+            - For languages that use a non-Latin writing system, the special language
+            formatting rules below take priority over ordinary quotation formatting.
 
-            Every romanized word or phrase that represents the target language MUST
-            use this exact syntax:
+            LANGUAGE LEARNING FORMATTING - REQUIRED
+
+            When the material teaches, explains, or discusses a language whose normal
+            writing system is non-Latin:
+
+            1. Preserve the actual target-language vocabulary and expressions.
+            Do not replace relevant target-language words or phrases with only an
+            English translation.
+
+            2. Every target-language word or phrase that has a standard romanization
+            MUST be written using exactly this syntax:
 
             [[native script|romanization]]
 
-            There must NEVER be bare romanization of a target-language word anywhere
-            in the flashcard, including:
-            - inside quotations
-            - inside example sentences
-            - inside parentheses
-            - when discussing grammar particles
-            - when the entire example sentence is romanized
+            3. The romanization is the main readable text shown to the learner.
+            The native script is the annotation that will be displayed above it.
 
-            The romanization is always the main displayed text.
-            The native script is always the annotation.
+            4. Never output:
+            - native script by itself when a standard romanization exists
+            - romanization by itself when the native script is known
+            - an English translation as a replacement for the target-language
+                expression when that expression itself is relevant
+
+            5. English translations may be used to explain meaning, but they must not
+            replace the target-language expression being taught or discussed.
+
+            6. Apply the [[native script|romanization]] syntax everywhere target-language
+            text appears, including:
+            - flashcard fronts
+            - flashcard backs
+            - practice questions
+            - multiple-choice answer options
+            - explanations
+            - example sentences
+
+            7. When an entire example sentence is in the target language, annotate every
+            target-language word or meaningful unit that should be readable to a learner.
+
+            8. Never leave bare target-language romanization inside:
+            - quotation marks
+            - parentheses
+            - example sentences
+            - grammar explanations
+            - answer options
+
+            9. Never leave bare native script when a standard romanization is available.
+
+            10. Before returning the generated study material, inspect every
+                target-language word or phrase.
+                If it can be represented as [[native script|romanization]], it MUST use
+                that format.
+
+            LANGUAGE FORMATTING EXAMPLES
+
+            Incorrect:
+            Use the person's name plus "さん".
+
+            Incorrect:
+            Use the person's name plus "san".
+
+            Correct:
+            Use the person's name plus [[さん|san]].
+
+            Incorrect:
+            What does "です" mean?
+
+            Incorrect:
+            What does "desu" mean?
+
+            Correct:
+            What does [[です|desu]] mean?
+
+            Incorrect:
+            What is the role of "wa" in "watashi wa Anna desu"?
 
             Correct:
             What is the role of [[は|wa]] in
             "[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]"?
+
+            Incorrect:
+            Which word means "cat"?
+            A. neko
+            B. inu
+            C. tori
+            D. sakana
+
+            Correct:
+            Which word means "cat"?
+            A. [[猫|neko]]
+            B. [[犬|inu]]
+            C. [[鳥|tori]]
+            D. [[魚|sakana]]
+
+            IMPORTANT LANGUAGE QUESTION RULE
+
+            Do not accidentally reveal the answer inside the question.
+
+            For example, if the question asks for the pronunciation of a native-script
+            term, do not display its romanization on the front because that would reveal
+            the answer.
+
+            Bad:
+            How is [[は|wa]] pronounced when used as the topic particle?
+
+            Better:
+            Which pronunciation is used for "は" when it functions as the topic particle?
         """,
 
-        # Max context window is 1M tokens 
+        # Max context window is 1M tokens.
         input=text[:1_000_000],
 
         text={

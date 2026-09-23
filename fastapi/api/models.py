@@ -1,7 +1,8 @@
 from datetime import datetime
 from database import Base
+from datetime import date
 
-from sqlalchemy import String, ForeignKey, DateTime, BigInteger, func, Text, JSON, Float, UniqueConstraint
+from sqlalchemy import Date, String, ForeignKey, DateTime, BigInteger, func, Text, JSON, Float, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 ## 
@@ -181,6 +182,60 @@ class Topic(Base):
     mastery_records: Mapped[list["TopicMastery"]] = relationship(
         back_populates="topic",
         cascade="all, delete-orphan"
+    )
+
+
+    # Topic -< Many QuestionSession
+    question_sessions: Mapped[list["QuestionSession"]] = relationship(
+        back_populates="topic",
+        cascade="all, delete-orphan"
+    )
+
+
+class QuestionSession(Base):
+    __tablename__ = "question_sessions"
+
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "topic_id",
+            name="user_topic_question_session"
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(
+        primary_key=True
+    )
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"),
+        nullable=False
+    )
+
+    topic_id: Mapped[int] = mapped_column(
+        ForeignKey("topics.id"),
+        nullable=False
+    )
+
+    last_completed: Mapped[date] = mapped_column(
+        Date, 
+        nullable=True
+    )
+
+    current_question_index: Mapped[int] = mapped_column(
+        default=0,
+        nullable=False
+    )
+
+    question_ids: Mapped[list[int]] = mapped_column(
+        JSON,
+        nullable=False
+    )
+
+
+    # Topic -< Many QuestionSession
+    topic: Mapped["Topic"] = relationship(
+        back_populates="question_sessions"
     )
 
 
