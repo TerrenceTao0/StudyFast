@@ -88,7 +88,7 @@ export default function Home() {
         <Title />
 
         <form 
-          className="flex flex-col gap-3 items-center w-70 h-50"
+          className="flex flex-col gap-3 items-center w-70 h-90 justify-center"
           onSubmit={(event) => attemptLogin(event, email, password)}
         >
             <div className="relative flex flex-col justify-center w-60 text-white">
@@ -157,7 +157,7 @@ export default function Home() {
                 {loading ? "Logging in..." : "Login"}
             </button>
 
-            <button className="squareButton">
+            <button className="cursor-pointer w-10 h-10 bg-foreground text-white rounded-sm">
               G
             </button>
         </form>

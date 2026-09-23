@@ -90,7 +90,7 @@ export default function LandingPage() {
         <Title />
 
         <form 
-          className="flex flex-col gap-2 items-center w-60 h-90 mt-30"
+          className="flex flex-col gap-2 items-center w-60 h-90 justify-center"
           onSubmit={(event) => createAccount(event, email, password)}
         >
             <div className="relative flex flex-col justify-center w-full">
