@@ -164,6 +164,15 @@ def answer_question(
         )
 
 
+    today = datetime.now(timezone.utc).date()
+
+    if (session.last_completed and today - session.last_completed < timedelta(days=1)):
+        raise HTTPException(
+            status_code=409,
+            detail="Session is already completed."
+        )
+
+        
     question_ids = session.question_ids
     current_question_index = session.current_question_index
     
@@ -191,9 +200,10 @@ def answer_question(
         )
 
 
-    if (session.current_question_index + 1 >= len(question_ids)):
+    finished = session.current_question_index + 1 >= len(question_ids)
+
+    if (finished):
         # User completed their daily question set so put them on cooldown and reset set.
-        today = datetime.now(timezone.utc).date()
         session.current_question_index = 0 
         session.last_completed = today
 
@@ -212,8 +222,7 @@ def answer_question(
         )
     )
 
-    mastery = 0 
-
+    
     if (mastery_record):
         if (correct):
             mastery_record.mastery = min(
@@ -228,14 +237,20 @@ def answer_question(
             ) 
 
 
-        mastery = mastery_record.mastery
-
-
     db.commit()
 
-    return {
-        "correct": correct,
-        "answer": question.answer,
-        "explanation": question.explanation,
-    }
+    if (finished):
+        return {
+            "correct": correct,
+            "answer": question.answer,
+            "explanation": question.explanation,
+            "finished": True
+        }
+
+    else:
+        return {
+            "correct": correct,
+            "answer": question.answer,
+            "explanation": question.explanation,
+        }
 

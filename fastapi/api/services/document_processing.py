@@ -134,7 +134,8 @@ def analyze(text: str) -> dict:
 
             STUDY MATERIAL REQUIREMENTS
 
-            - Base all generated content on the supplied material.
+            - Base all generated content on the supplied material, however, the content may be outdated or wrong. 
+            If that is the case, you should fix it / improve it.
             - Cover the material broadly rather than focusing too heavily on one section.
             - Prioritize knowledge that is useful to remember, understand, or apply.
             - Avoid trivial or incidental details unless they are important to the
@@ -146,7 +147,6 @@ def analyze(text: str) -> dict:
             rather than merely copy sentences from the source.
             - Include a mixture of easy, medium, and hard questions.
             - Every question must have exactly four distinct answer options.
-            - Each question does not have to be entirely unique. 
             - Exactly one answer option must be correct.
             - Incorrect options should be plausible enough to require actual knowledge, 
             but must still be clearly wrong.
@@ -286,8 +286,8 @@ def analyze(text: str) -> dict:
                         },
                         "topics": {
                             "type": "array",
-                            "minItems": 10,
-                            "maxItems": 50,
+                            "minItems": 5,
+                            "maxItems": 20,
                             "items": {
                                 "type": "object",
                                 "properties": {

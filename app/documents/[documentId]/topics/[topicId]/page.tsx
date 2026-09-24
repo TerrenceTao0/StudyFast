@@ -222,6 +222,18 @@ export default function Topic() {
                         setSelectedAnswer("")
                         setCurrentQuestion(Math.min(questions!.length - 1, currentQuestion + 1))
                     }, 1500)
+
+                    if (json.finished) {
+                        setCurrentQuestion(questions!.length)
+
+                        setTimeout(() => {
+                            setQuestionResponse(undefined)
+                            setSelectedAnswer("")
+                            setCurrentQuestion(0)
+                            setQuestions(undefined)
+                            setState("complete")
+                        }, 1500)
+                    }
                 }
                 else {
                     new Audio("/sfx/question_wrong.mp3").play()
@@ -381,7 +393,7 @@ export default function Topic() {
 
 
     function QuestionTask() {
-        const question = questions![currentQuestion]
+        const question = questions![Math.min(currentQuestion, 6)]
 
         return (
             <div className="
@@ -501,7 +513,9 @@ export default function Topic() {
     return (
         <div className="relative min-h-screen flex justify-center">
             {currentCard ? (
-                <FlashcardTask />
+                <>
+                    <FlashcardTask />
+                </>
             ) : breakData ? (
                 <>
                     <ProgressBar progress={breakData.completion || 0} className="w-150 mt-28" />
