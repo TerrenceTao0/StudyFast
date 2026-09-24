@@ -150,8 +150,7 @@ def analyze(text: str) -> dict:
             - Exactly one answer option must be correct.
             - Incorrect options should be plausible enough to require actual knowledge, 
             but must still be clearly wrong.
-            - Every question must include a short explanation of why the correct answer is correct.
-
+  
             GENERAL FORMATTING RULES
 
             - Put ordinary literal terms, vocabulary words, phrases, symbols, commands,
@@ -270,7 +269,7 @@ def analyze(text: str) -> dict:
             Which pronunciation is used for "は" when it functions as the topic particle?
         """,
 
-        # Max context window is 1M tokens.
+        # Max context window is 1M tokens so we need to restrict text content size.
         input=text[:1_000_000],
 
         text={
@@ -334,9 +333,6 @@ def analyze(text: str) -> dict:
                                                 "answer": {
                                                     "type": "string"
                                                 },
-                                                "explanation": {
-                                                    "type": "string"
-                                                },
                                                 "difficulty": {
                                                     "type": "string",
                                                     "enum": [
@@ -350,7 +346,6 @@ def analyze(text: str) -> dict:
                                                 "question",
                                                 "options",
                                                 "answer",
-                                                "explanation",
                                                 "difficulty"
                                             ],
                                             "additionalProperties": False

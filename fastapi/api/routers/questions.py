@@ -65,7 +65,7 @@ def generate_questions(db, current_user, topic_id):
     questions_copy = questions.copy()
     random.shuffle(questions_copy)
 
-    return questions_copy[:7]
+    return questions_copy[:5]
 
     
 @router.get("/{topic_id}")

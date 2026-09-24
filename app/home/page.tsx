@@ -207,9 +207,18 @@ export default function Home() {
                             cursor-pointer
                         "
                     >
-                        <span className="px-3 pr-9 text-left text-[14px]">
-                            {document.title}
-                        </span>
+                        {document.status !== "ready" ? (
+                            <div
+                                className="
+                                    w-10 h-10 border-3 border-gray-400 border-t-primary
+                                    rounded-full animate-spin
+                                "
+                            />
+                        ) : (
+                            <span className="px-3 pr-9 text-left text-[14px]">
+                                {document.title}
+                            </span>
+                        )}
 
                         <p className="absolute right-2 bottom-1 text-gray-400 text-sm">
                             {Math.round(

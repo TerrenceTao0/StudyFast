@@ -25,7 +25,6 @@ def construct_topic(i, topic_data):
                 question=question_data["question"],
                 options=question_data["options"],
                 answer=question_data["answer"],
-                explanation=question_data["explanation"],
                 difficulty=question_data["difficulty"]
             )
         )

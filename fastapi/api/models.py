@@ -340,11 +340,6 @@ class Question(Base):
         nullable=False
     )
 
-    explanation: Mapped[str] = mapped_column(
-        Text,
-        nullable=False
-    )
-
 
     # Difficulties: easy, medium, hard
     difficulty: Mapped[str] = mapped_column(
