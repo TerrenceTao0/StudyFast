@@ -76,6 +76,16 @@ class TopicMastery(Base):
         back_populates="mastery_records"
     )
 
+    round: Mapped["int"] = mapped_column(
+        default=0,
+        nullable=False
+    )
+
+    completed_flashcards: Mapped[bool] = mapped_column(
+        default=False,
+        nullable=False
+    )
+
 
 class Document(Base):
     __tablename__ = "documents"
@@ -217,11 +227,6 @@ class QuestionSession(Base):
         nullable=False
     )
 
-    last_completed: Mapped[date] = mapped_column(
-        Date, 
-        nullable=True
-    )
-
     current_question_index: Mapped[int] = mapped_column(
         default=0,
         nullable=False
@@ -236,6 +241,11 @@ class QuestionSession(Base):
     # Topic -< Many QuestionSession
     topic: Mapped["Topic"] = relationship(
         back_populates="question_sessions"
+    )
+
+    round: Mapped["int"] = mapped_column(
+        default=0,
+        nullable=False 
     )
 
 

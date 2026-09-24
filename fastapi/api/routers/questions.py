@@ -62,7 +62,16 @@ def get_questions(
     session = db.scalar(session_query)
 
     if (session):
-        if (session.last_completed and today - session.last_completed < timedelta(days=1)):
+        topic_mastery = db.scalar(
+            select(TopicMastery)
+            .where(
+                TopicMastery.topic_id == topic_id,
+                TopicMastery.user_id == current_user.id
+            )
+        )
+
+
+        if (topic_mastery and session.round >= topic_mastery.round):
             raise HTTPException(
                 status_code=409,
                 detail="Session is already completed."
@@ -73,6 +82,7 @@ def get_questions(
             select(Question)
             .where(Question.id.in_(session.question_ids))
         ).all()
+
 
         # Reconstruct correct order of questions.
         questions_by_id = {
@@ -121,10 +131,6 @@ def get_questions(
     session = QuestionSession(
         user_id=current_user.id,
         topic_id=topic_id,
-
-        # Date is None so that the user can do the question set immediately. 
-        last_completed=None,
-
         current_question_index=0,
         question_ids=ids
     )
@@ -164,9 +170,22 @@ def answer_question(
         )
 
 
-    today = datetime.now(timezone.utc).date()
+    topic_mastery = db.scalar(
+        select(TopicMastery)
+        .where(
+            TopicMastery.topic_id == topic_id,
+            TopicMastery.user_id == current_user.id
+        )
+    )
 
-    if (session.last_completed and today - session.last_completed < timedelta(days=1)):
+    if (topic_mastery is None):
+        raise HTTPException(
+            status_code=404,
+            detail="Topic mastery was not found."
+        )
+
+
+    if (session.round >= topic_mastery.round):
         raise HTTPException(
             status_code=409,
             detail="Session is already completed."
@@ -203,9 +222,9 @@ def answer_question(
     finished = session.current_question_index + 1 >= len(question_ids)
 
     if (finished):
-        # User completed their daily question set so put them on cooldown and reset set.
+        # User completed their daily question set.
         session.current_question_index = 0 
-        session.last_completed = today
+        session.round = topic_mastery.round 
 
     else:
         # User should progress to next question in the set.

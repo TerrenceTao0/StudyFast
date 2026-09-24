@@ -7,7 +7,7 @@ from typing import Literal
 
 from database import get_db
 from datetime import datetime, timezone
-from models import Topic, Document, User, Flashcard, FlashcardProgress
+from models import Topic, Document, User, Flashcard, FlashcardProgress, TopicMastery
 from routers.auth import get_current_user
 from fsrs import Scheduler, Card, Rating, State
 
@@ -58,6 +58,22 @@ def get_flashcard(
         }
     
 
+    topic_mastery = next(
+        (
+            record
+            for record in topic.mastery_records
+            if record.user_id == current_user.id
+        ),
+        None
+    )
+
+    if (topic_mastery is None):
+        raise HTTPException(
+            status_code=404,
+            detail="Topic mastery not found."
+        )
+
+
     now = datetime.now(timezone.utc)
     new_card = None
     soonest_due = None 
@@ -82,7 +98,7 @@ def get_flashcard(
                     "front": flashcard.front,
                     "back": flashcard.back
                 }
-
+                
 
             continue
 
@@ -90,6 +106,12 @@ def get_flashcard(
         card = Card.from_json(progress.fsrs_data)
 
         if (card.due <= now):
+            if (topic_mastery.completed_flashcards):
+                topic_mastery.completed_flashcards = False
+
+                db.commit()
+
+
             return {
                 "state": "card",
                 "id": flashcard.id,
@@ -108,6 +130,12 @@ def get_flashcard(
 
 
     if (new_card):
+        if (topic_mastery.completed_flashcards):
+            topic_mastery.completed_flashcards = False
+
+            db.commit()
+
+
         return new_card
 
 
@@ -115,6 +143,13 @@ def get_flashcard(
 
     # User should move onto doing practice questions after learning all the cards.
     if (completion == 100):
+        if (not topic_mastery.completed_flashcards):
+            topic_mastery.completed_flashcards = True 
+            topic_mastery.round += 1
+
+            db.commit()
+
+
         return {
             "state": "complete"
         }
