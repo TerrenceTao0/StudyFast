@@ -104,7 +104,7 @@ def analyze(text: str) -> dict:
             1. A concise descriptive title, maximum 100 characters.
             2. A list of granular topics covered by the material.
             3. Exactly 10 flashcards for each topic.
-            4. Exactly 35 multiple-choice question for each topic.
+            4. Exactly 20 multiple-choice question for each topic.
 
             TOPIC REQUIREMENTS
 
@@ -130,6 +130,7 @@ def analyze(text: str) -> dict:
             Do not use one broad topic called "Integration" if the material separately
             teaches integration by substitution, integration by parts, and partial
             fractions. Those should be separate topics.
+            - Try generate as many topics as possible so it feels like a genuine course.
 
             STUDY MATERIAL REQUIREMENTS
 
@@ -140,14 +141,12 @@ def analyze(text: str) -> dict:
             subject of the material.
             - Avoid duplicate or near-duplicate flashcards.
             - Make flashcards concise and suitable for active recall.
-            - Each topic must have exactly 10 flashcards.
             - Associate every flashcard and every question with exactly one generated topic.
             - Questions should test understanding, application, recognition, or recall,
             rather than merely copy sentences from the source.
             - Include a mixture of easy, medium, and hard questions.
             - Every question must have exactly four distinct answer options.
-            - Generate exactly 35 questions per topic. 
-            Each question does not have to be entirely unique, you can generate different variations of the same underlying question. 
+            - Each question does not have to be entirely unique. 
             - Exactly one answer option must be correct.
             - Incorrect options should be plausible enough to require actual knowledge, 
             but must still be clearly wrong.
@@ -287,6 +286,8 @@ def analyze(text: str) -> dict:
                         },
                         "topics": {
                             "type": "array",
+                            "minItems": 10,
+                            "maxItems": 50,
                             "items": {
                                 "type": "object",
                                 "properties": {
@@ -310,7 +311,9 @@ def analyze(text: str) -> dict:
                                                 "back"
                                             ],
                                             "additionalProperties": False
-                                        }
+                                        },
+                                        "minItems": 10,
+                                        "maxItems": 10
                                     },
                                     "question_bank": {
                                         "type": "array",
@@ -351,7 +354,9 @@ def analyze(text: str) -> dict:
                                                 "difficulty"
                                             ],
                                             "additionalProperties": False
-                                        }
+                                        },
+                                        "minItems": 20,
+                                        "maxItems": 20
                                     }
                                 },
                                 "required": [

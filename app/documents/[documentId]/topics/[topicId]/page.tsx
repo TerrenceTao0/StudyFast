@@ -1,7 +1,7 @@
 "use client"
 
 import { useParams } from "next/navigation"
-import { ProgressBar } from "@/components/progressBar"
+import ProgressBar from "@/components/progressBar"
 import { useEffect, useState } from "react"
 import Link from "next/link"
 

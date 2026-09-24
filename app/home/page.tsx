@@ -3,7 +3,8 @@
 import NavBar from "@/components/navbar"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { ProgressBar } from "@/components/progressBar"
+import ProgressBar from "@/components/progressBar"
+import ConfirmationPrompt from "@/components/confirmationPrompt"
  
 //
 
@@ -20,6 +21,7 @@ type DocumentData = {
 export default function Home() { 
     const router = useRouter()
     const [documents, setDocuments] = useState<DocumentData[]>([])
+    const [documentToDelete, setDocumentToDelete] = useState<number>()
 
     useEffect(() => {
         getDocuments()
@@ -47,6 +49,29 @@ export default function Home() {
         return () => clearTimeout(timeout)
 
     }, [documents])
+
+
+    async function deleteDocument(documentId: number) {
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/documents/${documentId}`,
+                {
+                    method: "DELETE",
+                    credentials: "include"
+                }
+            )
+
+
+            if (response.ok) {
+                setDocuments(prev =>
+                    prev.filter(document => document.id !== documentId)
+                )
+            }
+        }
+        catch {
+
+        }
+    }
 
     
     async function getDocuments() {
@@ -159,38 +184,51 @@ export default function Home() {
         document: DocumentData
     }) {
         return (
-            <>
-                <div className="flex flex-col gap-0.5">
-                    {/* Mastery progress bar may be mistaken for a loading bar so hide it until document is ready. */}
-                    {document.status != "ready" ? (
-                        <div className="h-4">
+            <div className="flex flex-col gap-0.5">
+                {document.status != "ready" ? (
+                    <div className="h-4" />
+                ) : (
+                    <ProgressBar progress={document.mastery} />
+                )}
 
-                        </div>
-                    ): (
-                        <ProgressBar progress={document.mastery}/>
-                    )}
-
-
-                    <button 
+                <div className="relative w-50 h-30">
+                    <button
                         onClick={() => {
                             if (document.status === "ready") {
-                                router.push(`/documents/${document.id}/topics`)
+                                router.push(
+                                    `/documents/${document.id}/topics`
+                                )
                             }
                         }}
                         className="
-                            transition-all hover:bg-primary hover:text-white w-50 h-30 rounded-sm 
-                            bg-gray-200 border-black border-1 flex justify-center items-center 
-                            cursor-pointer relative
+                            transition-all hover:bg-primary hover:text-white
+                            w-full h-full rounded-sm bg-gray-200
+                            border-black border flex justify-center items-center
+                            cursor-pointer
                         "
                     >
-                        {document.title}
+                        <span className="px-3 pr-9 text-left text-[14px]">
+                            {document.title}
+                        </span>
 
-                        <p className="absolute right-1 bottom-0 text-gray-400 text-sm">
-                            {Math.round(document.size_bytes / 1024 / 1024 * 10) / 10} MB
+                        <p className="absolute right-2 bottom-1 text-gray-400 text-sm">
+                            {Math.round(
+                                document.size_bytes / 1024 / 1024 * 10
+                            ) / 10} MB
                         </p>
                     </button>
+
+                    <button
+                        onClick={() => setDocumentToDelete(document.id)}
+                        className="
+                            absolute top-1 right-1 w-7 h-7 rounded text-red-600 cursor-pointer
+                            hover:bg-red-300 hover:border-1 hover:border-black transition-all
+                        "
+                    >
+                        x
+                    </button>
                 </div>
-            </>
+            </div>
         )
     }
 
@@ -213,6 +251,17 @@ export default function Home() {
                         ))}
                     </div>
                 </div>
+
+                {documentToDelete && (
+                    <ConfirmationPrompt 
+                        message="Delete this course?"
+                        onNo={() => setDocumentToDelete(undefined)}
+                        onYes={() => {
+                            deleteDocument(documentToDelete)
+                            setDocumentToDelete(undefined)
+                        }}
+                    />
+                )}
             </>
         )
     }

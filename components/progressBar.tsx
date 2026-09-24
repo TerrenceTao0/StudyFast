@@ -1,4 +1,4 @@
-export function ProgressBar({
+export default function ProgressBar({
     progress,
     className
 }: {

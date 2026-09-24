@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 
-import { ProgressBar } from "@/components/progressBar"
+import ProgressBar from "@/components/progressBar"
 import { getDocument } from "@/lib/document"
  
 //

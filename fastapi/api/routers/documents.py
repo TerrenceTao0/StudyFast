@@ -237,3 +237,30 @@ def get_document(
         "mastery": document_mastery
     }
 
+
+@router.delete("/{document_id}")
+def deleteDocument(
+    document_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    query = (
+        select(Document)
+        .where(
+            Document.id == document_id,
+            Document.user_id == current_user.id
+        )
+    )
+
+    document = db.scalar(query)
+
+    if (document is None):
+        raise HTTPException(
+            status=404,
+            detail="Document not found."
+        )
+
+
+    db.delete(document)
+    db.commit()
+
