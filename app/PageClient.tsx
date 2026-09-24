@@ -90,7 +90,10 @@ export default function LandingPage() {
         <Title />
 
         <form 
-          className="flex flex-col gap-2 items-center w-60 h-90 justify-center"
+          className="
+          flex flex-col gap-2 items-center w-70 h-90 justify-center bg-gray-100 rounded-md
+          p-4 border-1 border-gray-400
+        "
           onSubmit={(event) => createAccount(event, email, password)}
         >
             <div className="relative flex flex-col justify-center w-full">
@@ -146,9 +149,9 @@ export default function LandingPage() {
                     }`}
                 />
 
-                <p className="text-[12px] min-h-5 mt-2">
+                <span className="text-[12px] min-h-5 mt-2">
                   {passwordError}
-                </p>
+                </span>
             </div>
 
             <button 

@@ -88,7 +88,10 @@ export default function Home() {
         <Title />
 
         <form 
-          className="flex flex-col gap-3 items-center w-70 h-90 justify-center"
+          className="
+          flex flex-col gap-2 items-center w-70 h-90 justify-center bg-gray-100 rounded-md
+          p-4 border-1 border-gray-400
+        "
           onSubmit={(event) => attemptLogin(event, email, password)}
         >
             <div className="relative flex flex-col justify-center w-60 text-white">

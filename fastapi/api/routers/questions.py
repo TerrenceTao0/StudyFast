@@ -42,14 +42,38 @@ def construct_question_set(questions):
     return cleaned_questions
 
 
+def generate_questions(db, current_user, topic_id):
+    query = (
+        select(Question)
+        .join(Topic)
+        .join(Document)
+        .where(
+            Document.user_id == current_user.id,
+            Topic.id == topic_id
+        )
+    )
+
+    questions = db.scalars(query).all()
+
+    if (not questions):
+        raise HTTPException(
+            status_code=404,
+            detail="Questions not found."
+        )
+
+
+    questions_copy = questions.copy()
+    random.shuffle(questions_copy)
+
+    return questions_copy[:7]
+
+    
 @router.get("/{topic_id}")
 def get_questions(
     topic_id: int, 
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    today = datetime.now(timezone.utc).date()
-
     session_query = (
         select(QuestionSession)
         .join(Topic)
@@ -58,7 +82,7 @@ def get_questions(
             QuestionSession.user_id == current_user.id 
         )
     )
-
+    
     session = db.scalar(session_query)
 
     if (session):
@@ -71,17 +95,37 @@ def get_questions(
         )
 
 
-        if (topic_mastery and session.round >= topic_mastery.round):
-            raise HTTPException(
-                status_code=409,
-                detail="Session is already completed."
-            )
+        questions = None 
+
+        if (topic_mastery):
+            if (session.round > topic_mastery.round):
+                raise HTTPException(
+                    status_code=409,
+                    detail="Session is already completed."
+                )
 
 
-        questions = db.scalars(
-            select(Question)
-            .where(Question.id.in_(session.question_ids))
-        ).all()
+            elif (session.round < topic_mastery.round):
+                # Session is old - generate new session.
+                questions = generate_questions(db, current_user, topic_id)
+
+                session.question_ids = [
+                    question.id
+                    for question in questions
+                ]
+
+                session.current_question_index = 0
+                session.round = topic_mastery.round 
+
+                db.commit()
+
+
+        if (not questions):
+            # Continuing uncompleted session.
+            questions = db.scalars(
+                select(Question)
+                .where(Question.id.in_(session.question_ids))
+            ).all()
 
 
         # Reconstruct correct order of questions.
@@ -103,28 +147,8 @@ def get_questions(
         } 
 
 
-    query = (
-        select(Question)
-        .join(Topic)
-        .join(Document)
-        .where(
-            Document.user_id == current_user.id,
-            Topic.id == topic_id
-        )
-    )
-
-    questions = db.scalars(query).all()
-
-    if (not questions):
-        raise HTTPException(
-            status_code=404,
-            detail="Questions not found."
-        )
-
-
-    random.shuffle(questions)
-    questions = questions[:7]
-
+    # User's first time doing questions for this topic - generate session.
+    questions = generate_questions(db, current_user, topic_id)
     cleaned_questions = construct_question_set(questions)
 
     ids = [question["id"] for question in cleaned_questions]
@@ -185,17 +209,18 @@ def answer_question(
         )
 
 
-    if (session.round >= topic_mastery.round):
+    # User is trying to answer questions when they haven't finished flashcard task yet.
+    if (session.round < topic_mastery.round):
         raise HTTPException(
             status_code=409,
-            detail="Session is already completed."
+            detail="Question session is outdated."
         )
-
+    
         
     question_ids = session.question_ids
     current_question_index = session.current_question_index
     
-    # Check if user is actually answering their given question.
+    # User might be trying to answer the a random/wrong question.
     if (question_ids[current_question_index] != question_id):
         raise HTTPException(
             status_code=400,
@@ -222,9 +247,16 @@ def answer_question(
     finished = session.current_question_index + 1 >= len(question_ids)
 
     if (finished):
-        # User completed their daily question set.
+        if (session.round == topic_mastery.round):
+            HTTPException(
+                status_code=409,
+                detail="Question session is finished."
+            ) 
+
+
+        # User completed their daily question set - wait until they complete their next flashcard round.
         session.current_question_index = 0 
-        session.round = topic_mastery.round 
+        session.round = topic_mastery.round + 1 
 
     else:
         # User should progress to next question in the set.
@@ -245,7 +277,7 @@ def answer_question(
     if (mastery_record):
         if (correct):
             mastery_record.mastery = min(
-                mastery_record.mastery + 2,
+                mastery_record.mastery + 3,
                 100
             ) 
 
@@ -265,6 +297,7 @@ def answer_question(
             "explanation": question.explanation,
             "finished": True
         }
+
 
     else:
         return {

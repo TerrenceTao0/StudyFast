@@ -270,7 +270,7 @@ export default function Home() {
     return (
         <>
             <NavBar />
-
+            
             {documents.length == 0 ? <EmptyUpload /> : <GridLayout />}
         </>
     )

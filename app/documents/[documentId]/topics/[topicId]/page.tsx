@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 
 import { getDocument } from "@/lib/document"
+import { title } from "process"
 
 //
 
