@@ -109,7 +109,6 @@ export default function Topic() {
 
     const [questions, setQuestions] = useState<QuestionData[]>()
     const [currentQuestion, setCurrentQuestion] = useState<number>(0)
-    const [topicMastery, setTopicMastery] = useState<number>(0)
     const [questionResponse, setQuestionResponse] = useState<QuestionResponse>()
     const [selectedAnswer, setSelectedAnswer] = useState("")
 
@@ -119,9 +118,6 @@ export default function Topic() {
             
             if (data) {
                 setDocument(data)
-                setTopicMastery(data.topics.find(
-                    (topic: TopicData) => topic.id === Number(topicId)
-                )?.mastery ?? 0)
             }
         }
 
@@ -215,7 +211,6 @@ export default function Topic() {
 
             if (response.ok) {
                 const json = await response.json()
-                setTopicMastery(json.mastery)
                 setQuestionResponse(json)
                 setSelectedAnswer(user_answer)
 
@@ -514,7 +509,7 @@ export default function Topic() {
                 </>
             ) : questions ? (
                 <>
-                    <ProgressBar progress={topicMastery || 0} className="w-150 mt-18" />
+                    <ProgressBar progress={Math.round(currentQuestion / 7 * 1000) / 10 || 0} className="w-150 mt-18" />
                     <QuestionTask />
                 </>
             ) : state == "complete" && (

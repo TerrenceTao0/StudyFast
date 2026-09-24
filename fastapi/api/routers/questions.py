@@ -112,8 +112,10 @@ def get_questions(
         )
 
 
+    random.shuffle(questions)
+    questions = questions[:7]
+
     cleaned_questions = construct_question_set(questions)
-    random.shuffle(cleaned_questions)
 
     ids = [question["id"] for question in cleaned_questions]
     session = QuestionSession(
@@ -235,6 +237,5 @@ def answer_question(
         "correct": correct,
         "answer": question.answer,
         "explanation": question.explanation,
-        "mastery": mastery 
     }
 
