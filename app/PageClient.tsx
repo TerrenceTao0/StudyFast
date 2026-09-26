@@ -86,25 +86,19 @@ export default function LandingPage() {
 
   return (
     <>
-      <div className="flex justify-center items-center w-full h-screen">
+      <div className="flex flex-col md:flex-row justify-center items-center gap-10 md:gap-16 w-full min-h-screen p-6">
         <Title />
 
-        <form 
-          className="
-          flex flex-col gap-2 items-center w-70 h-90 justify-center bg-gray-100 rounded-md
-          p-4 border-1 border-gray-400
-        "
+        <form
+          className="card flex flex-col gap-3 w-full max-w-sm p-7"
           onSubmit={(event) => createAccount(event, email, password)}
         >
-            <div className="relative flex flex-col justify-center w-full">
-                <label
-                    htmlFor="email"
-                    className="
-                      transition-all
-                      peer-focus:text-primary
-                      peer-not-placeholder-shown:text-primary
-                    "
-                >
+            <h2 className="text-2xl font-extrabold mb-1">
+              Create an account
+            </h2>
+
+            <div className="flex flex-col gap-1.5 group">
+                <label htmlFor="email" className="text-sm font-bold text-accent group-focus-within:text-primary transition-colors">
                     Email
                 </label>
 
@@ -112,28 +106,18 @@ export default function LandingPage() {
                     id="email"
                     type="email"
                     required
-                    placeholder=" "
                     value={email}
                     onChange={updateEmail}
-                    className={`peer transition-all border-black border-1 rounded-sm outline-none pl-2 ${
-                      emailError != "" && "bg-red-50"  
-                    }`}
+                    className={`input ${emailError != "" ? "input-error" : ""}`}
                 />
 
-                <p className="text-[12px] min-h-5 mt-2">
+                <p className="text-xs text-danger min-h-4">
                   {emailError}
                 </p>
             </div>
 
-            <div className="relative flex flex-col justify-center w-full">
-                <label
-                    htmlFor="password"
-                    className="
-                      transition-all
-                      peer-focus:text-primary
-                      peer-not-placeholder-shown:text-primary
-                    "
-                >
+            <div className="flex flex-col gap-1.5 group">
+                <label htmlFor="password" className="text-sm font-bold text-accent group-focus-within:text-primary transition-colors">
                     Password
                 </label>
 
@@ -141,47 +125,46 @@ export default function LandingPage() {
                     id="password"
                     type="password"
                     required
-                    placeholder=" "
                     value={password}
                     onChange={updatePassword}
-                    className={`peer transition-all border-black border-1 rounded-sm outline-none pl-2 ${
-                      passwordError != "" && "bg-red-50"  
-                    }`}
+                    className={`input ${passwordError != "" ? "input-error" : ""}`}
                 />
 
-                <span className="text-[12px] min-h-5 mt-2">
+                <p className="text-xs text-danger min-h-4">
                   {passwordError}
-                </span>
+                </p>
             </div>
 
-            <button 
-              type="submit" 
-              className={`button transition-all ${!canSubmit && "!opacity-50 !cursor-default"}`}
-              disabled={!canSubmit}
+            <button
+              type="submit"
+              className="btn btn-primary w-full"
+              disabled={!canSubmit || loading}
             >
                 {loading ? "Creating..." : "Create Account"}
             </button>
 
-            <div className="flex w-50 items-center gap-3">
-              <div className="flex-1 border-t border-foreground" />
+            <div className="flex items-center gap-3 my-1 text-accent">
+              <div className="flex-1 border-t border-border" />
 
-              <span className="text-sm">
+              <span className="text-xs font-bold">
                 OR
               </span>
 
-              <div className="flex-1 border-t border-foreground" />
+              <div className="flex-1 border-t border-border" />
             </div>
 
-            <Link href="login" className="button transition-all">
-              Login
-            </Link>
-
-            <button className="cursor-pointer w-10 h-10 bg-foreground text-white rounded-sm">
-              G
+            <button type="button" className="btn btn-ghost w-full">
+              Continue with Google
             </button>
+
+            <p className="text-sm text-center text-accent mt-2">
+              Already have an account?{" "}
+              <Link href="/login" className="font-bold text-primary hover:underline">
+                Login
+              </Link>
+            </p>
         </form>
       </div>
     </>
   )
 }
-

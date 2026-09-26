@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import Title from "@/components/title"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -84,25 +85,19 @@ export default function Home() {
 
   return (
     <>
-      <div className="flex justify-center items-center w-full h-screen">
+      <div className="flex flex-col md:flex-row justify-center items-center gap-10 md:gap-16 w-full min-h-screen p-6">
         <Title />
 
-        <form 
-          className="
-          flex flex-col gap-2 items-center w-70 h-90 justify-center bg-gray-100 rounded-md
-          p-4 border-1 border-gray-400
-        "
+        <form
+          className="card flex flex-col gap-3 w-full max-w-sm p-7"
           onSubmit={(event) => attemptLogin(event, email, password)}
         >
-            <div className="relative flex flex-col justify-center w-60 text-white">
-                <label
-                    htmlFor="email"
-                    className="
-                      transition-all text-black
-                      peer-focus:text-primary
-                      peer-not-placeholder-shown:text-primary
-                    "
-                >
+            <h2 className="text-2xl font-extrabold mb-1">
+              Welcome back
+            </h2>
+
+            <div className="flex flex-col gap-1.5 group">
+                <label htmlFor="email" className="text-sm font-bold text-accent group-focus-within:text-primary transition-colors">
                     Email
                 </label>
 
@@ -110,28 +105,18 @@ export default function Home() {
                     id="email"
                     type="email"
                     required
-                    placeholder=" "
                     value={email}
                     onChange={updateEmail}
-                    className={`peer transition-all border-black border-1 rounded-sm outline-none pl-2 text-black ${
-                      emailError != "" && "bg-red-50"  
-                    }`}
+                    className={`input ${emailError != "" ? "input-error" : ""}`}
                 />
 
-                <p className="text-[12px] text-black min-h-5 mt-2">
+                <p className="text-xs text-danger min-h-4">
                   {emailError}
                 </p>
             </div>
 
-            <div className="relative flex flex-col justify-center w-60 text-white">
-                <label
-                    htmlFor="password"
-                    className="
-                      transition-all text-black
-                      peer-focus:text-primary
-                      peer-not-placeholder-shown:text-primary
-                    "
-                >
+            <div className="flex flex-col gap-1.5 group">
+                <label htmlFor="password" className="text-sm font-bold text-accent group-focus-within:text-primary transition-colors">
                     Password
                 </label>
 
@@ -139,33 +124,46 @@ export default function Home() {
                     id="password"
                     type="password"
                     required
-                    placeholder=" "
                     value={password}
                     onChange={updatePassword}
-                    className={`peer transition-all border-black border-1 rounded-sm outline-none pl-2 text-black ${
-                      passwordError != "" && "bg-red-50"  
-                    }`}
+                    className={`input ${passwordError != "" ? "input-error" : ""}`}
                 />
 
-                <p className="text-[12px] text-black min-h-5 mt-2">
+                <p className="text-xs text-danger min-h-4">
                   {passwordError}
                 </p>
             </div>
 
-            <button 
-              type="submit" 
-              className={`button transition-all ${!canSubmit && "!opacity-50 !cursor-default"}`}
-              disabled={!canSubmit}
+            <button
+              type="submit"
+              className="btn btn-primary w-full"
+              disabled={!canSubmit || loading}
             >
                 {loading ? "Logging in..." : "Login"}
             </button>
 
-            <button className="cursor-pointer w-10 h-10 bg-foreground text-white rounded-sm">
-              G
+            <div className="flex items-center gap-3 my-1 text-accent">
+              <div className="flex-1 border-t border-border" />
+
+              <span className="text-xs font-bold">
+                OR
+              </span>
+
+              <div className="flex-1 border-t border-border" />
+            </div>
+
+            <button type="button" className="btn btn-ghost w-full">
+              Continue with Google
             </button>
+
+            <p className="text-sm text-center text-accent mt-2">
+              Don&apos;t have an account?{" "}
+              <Link href="/" className="font-bold text-primary hover:underline">
+                Sign up
+              </Link>
+            </p>
         </form>
       </div>
     </>
   )
 }
-

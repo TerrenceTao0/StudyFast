@@ -6,7 +6,6 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 
 import { getDocument } from "@/lib/document"
-import { title } from "process"
 
 //
 
@@ -90,6 +89,176 @@ function LabeledText({ text }: { text: string }) {
     )
 }
 
+
+const OPTION_LETTERS = ["A", "B", "C", "D"]
+
+function FlashcardTask({
+    card,
+    cardState,
+    onReveal,
+    onReview
+}: {
+    card: Flashcard
+    cardState: string
+    onReveal: () => void
+    onReview: (answer: string) => void
+}) {
+    const shown = cardState == "shown"
+
+    return (
+        <div className="flex flex-col gap-6 items-center w-full">
+            <div className={`
+                card w-full min-h-80 flex flex-col items-center justify-center text-center p-8 gap-4
+                text-xl transition-all ${shown ? "border-primary/40" : ""}
+            `}>
+                <span className="text-xs font-bold uppercase tracking-wider text-accent">
+                    {shown ? "Answer" : "Question"}
+                </span>
+
+                <LabeledText text={shown ? card.back : card.front} />
+            </div>
+
+            {!shown ? (
+                <button className="btn btn-primary w-48" onClick={onReveal}>
+                    Show Answer
+                </button>
+            ) : (
+                <div className="flex gap-3 w-full max-w-sm">
+                    <button className="btn btn-danger flex-1" onClick={() => onReview("again")}>
+                        Forgot
+                    </button>
+
+                    <button className="btn btn-success flex-1" onClick={() => onReview("good")}>
+                        Remembered
+                    </button>
+                </div>
+            )}
+        </div>
+    )
+}
+
+
+function QuestionTask({
+    question,
+    selectedAnswer,
+    questionResponse,
+    onAnswer
+}: {
+    question: QuestionData
+    selectedAnswer: string
+    questionResponse?: QuestionResponse
+    onAnswer: (answer: string) => void
+}) {
+    return (
+        <div className="w-full">
+            {/* Question */}
+            <div className="card min-h-40 flex items-center justify-center text-center text-xl font-bold px-8 py-6">
+                <LabeledText text={question.question} />
+            </div>
+
+
+            {/* Answers */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
+                {question.options.map((option, index) => {
+                    const isAnswer = questionResponse?.answer == option
+                    const choseWrong = option == selectedAnswer && !questionResponse?.correct
+
+                    return (
+                        <button
+                            key={index}
+                            onClick={() => onAnswer(option)}
+                            className={`
+                                card min-h-20 px-4 py-3 flex items-center gap-3 text-left cursor-pointer
+                                transition-all duration-150 border-2 hover:-translate-y-0.5 hover:border-primary
+                                active:translate-y-0 active:scale-[0.98]
+                                ${isAnswer ? "!border-success !bg-green-50" : choseWrong ? "!border-danger !bg-red-50" : ""}
+                            `}
+                        >
+                            <span className={`
+                                w-8 h-8 shrink-0 rounded-lg flex items-center justify-center text-sm font-extrabold
+                                ${isAnswer ? "bg-success text-white" : choseWrong ? "bg-danger text-white" : "bg-background text-accent"}
+                            `}>
+                                {OPTION_LETTERS[index]}
+                            </span>
+
+                            <LabeledText text={option} />
+                        </button>
+                    )
+                })}
+            </div>
+
+
+            {/* User got the question wrong so they should get an explanation on how. */}
+            {questionResponse && selectedAnswer != questionResponse.answer && (
+                <div className="mt-4 p-4 rounded-2xl bg-red-50 border border-danger/30 flex flex-col gap-2">
+                    <span className="text-sm font-bold text-danger">
+                        Not quite
+                    </span>
+
+                    <LabeledText text={questionResponse.explanation} />
+
+                    <span className="text-xs text-accent">
+                        Click any option to continue.
+                    </span>
+                </div>
+            )}
+        </div>
+    )
+}
+
+
+function RestingPeriod({
+    timeLeft,
+    documentId
+}: {
+    timeLeft: string
+    documentId: string
+}) {
+    return (
+        <div className="card w-full min-h-80 flex flex-col gap-2 items-center justify-center text-center p-8">
+            <span className="text-2xl font-extrabold">
+                Break Time
+            </span>
+
+            <span className="text-accent">
+                Your next cards will be ready in
+            </span>
+
+            <span className="text-5xl font-extrabold text-primary tabular-nums my-2">
+                {timeLeft}
+            </span>
+
+            <Link href={`/documents/${documentId}/topics`} className="btn btn-ghost mt-3">
+                Back to topics
+            </Link>
+        </div>
+    )
+}
+
+
+function TopicComplete({ documentId }: { documentId: string }) {
+    return (
+        <div className="card w-full min-h-80 flex flex-col gap-3 items-center justify-center text-center p-8">
+            <span className="w-16 h-16 rounded-full bg-green-50 text-success text-3xl font-extrabold flex items-center justify-center">
+                ✓
+            </span>
+
+            <span className="text-3xl font-extrabold">
+                Topic Complete
+            </span>
+
+            <span className="text-accent">
+                Nice work! Head back to continue with the next topic.
+            </span>
+
+            <Link href={`/documents/${documentId}/topics`} className="btn btn-primary mt-3">
+                Back to topics
+            </Link>
+        </div>
+    )
+}
+
+//
 
 export default function Topic() {
     const params = useParams()
@@ -342,197 +511,51 @@ export default function Topic() {
     }
 
 
-    function FlashcardTask() {
-        return (
-            <>
-                <div 
-                    className="
-                        w-full h-full absolute flex flex-col gap-5 items-center justify-center
-                ">
-                    <div 
-                        className="
-                            w-150 h-80 bg-white flex items-center justify-center
-                            border-black border-1 rounded-sm text-center p-5"
-                        >
-                       <LabeledText
-                            text={
-                                cardState == "hidden"
-                                    ? currentCard!.front
-                                    : currentCard!.back
-                            }
-                        />
-                    </div>
-
-                    {cardState == "hidden" ? (
-                        <button 
-                            className="button transition-all"
-                            onClick={() => setCardState("shown")}
-                        >
-                            Answer
-                        </button>
-                    ) : (
-                        <div className="flex gap-5">
-                            <button 
-                                className="button transition-all !bg-red-500"
-                                onClick={() => review("again")}
-                            >
-                                Forgot
-                            </button>
-
-                            <button 
-                                className="button transition-all !bg-green-500"
-                                onClick={() => review("good")}
-                            >
-                                Remembered
-                            </button>
-                        </div>
-                    )}
-                </div>
-            </>
-        )
-    }
 
 
-    function QuestionTask() {
-        const question = questions![Math.min(currentQuestion, 6)]
-
-        return (
-            <div className="
-                w-full h-full absolute flex flex-col items-center justify-center
-            ">
-                <div className="w-150">
-                    {/* Question */}
-                    <div className="
-                        min-h-40 bg-white border border-black rounded-md flex items-center 
-                        justify-center text-center text-xl px-8 py-6 shadow-sm
-                    ">
-                        <LabeledText text={question.question} />
-                    </div>
-
-
-                    {/* Answers */}
-                    <div className="grid grid-cols-2 gap-4 mt-5">
-                        {question.options.map((option, index) => {
-                            const chose_wrong = option == selectedAnswer && !questionResponse?.correct
-
-                            return (
-                                <button
-                                    key={index}
-                                    onClick={() => submitAnswer(option)}
-                                    className={`
-                                        group min-h-24 bg-white rounded-lgvpx-5 py-4 rounded-md
-                                        flex items-center gap-4 justify-center shadow-sm
-                                        hover:bg-gray-200 hover:-translate-y-1 hover:shadow-md
-                                        active:translate-y-0 active:scale-[0.98] transition-all
-                                        duration-150 cursor-pointer border-black border-1 p-3
-                                        ${questionResponse?.answer == option ? (
-                                            "!bg-green-300"
-                                        ): chose_wrong && (
-                                            "!bg-red-300"
-                                        )}
-                                    `}
-                                >
-                                    <LabeledText text={option} />
-                                </button>
-                            )
-                        })}
-                    </div>
-
-
-                    {/* User got the question wrong so they should get an explanation on how. */}
-                    {questionResponse && selectedAnswer != questionResponse.answer && (
-                        <p 
-                        className="
-                            h-15 flex justify-center items-center bg-gray-200 rounded-md mt-3
-                            border-black border-1 p-3 
-                        ">
-                            <LabeledText text={questionResponse.explanation} />
-                        </p>
-                    )}
-                </div>
-            </div>
-        )
-    }
-
-
-    function RestingPeriod() {
-        return (
-            <div className="absolute flex justify-center items-center w-full h-full">
-                <div 
-                    className="
-                        border-black border-1 w-150 h-80 bg-white flex items-center justify-center
-                        flex-col 
-                ">
-                    <span className="text-[30px]">
-                        Break Time
-                    </span>
-
-                    <span className="text-[20px]">
-                        {breakTimeLeft}
-                    </span>
-
-                    <Link 
-                        href={`/documents/${documentId}/topics`}
-                        className="button transition-all mt-5"
-                    >
-                        Back
-                    </Link>
-                </div>
-            </div>
-        )
-    }
-
-
-    function TopicComplete() {
-        return (
-            <>
-                <div className="w-full h-screen flex items-center justify-center">
-                    <div 
-                        className="
-                        w-100 h-50 bg-gray-300 rounded-md flex flex-col items-center justify-center
-                        border-1 border-black
-                    ">
-                        <span className="text-[30px] text-gray-700">
-                            <b>
-                                COMPLETE
-                            </b>
-                        </span>
-
-                        <Link 
-                            href={`/documents/${documentId}/topics`}
-                            className="button transition-all mt-5"
-                        >
-                            Back
-                        </Link>
-                    </div>
-                </div>
-            </>
-        )
-    }
-
+    const progress = breakData
+        ? breakData.completion || 0
+        : questions
+            ? Math.round(currentQuestion / 7 * 1000) / 10 || 0
+            : undefined
 
     return (
-        <div className="relative min-h-screen flex justify-center">
-            {currentCard ? (
-                <>
-                    <FlashcardTask />
-                </>
-            ) : breakData ? (
-                <>
-                    <ProgressBar progress={breakData.completion || 0} className="w-150 mt-28" />
-                    <RestingPeriod />
-                </>
-            ) : questions ? (
-                <>
-                    <ProgressBar progress={Math.round(currentQuestion / 7 * 1000) / 10 || 0} className="w-150 mt-18" />
-                    <QuestionTask />
-                </>
-            ) : state == "complete" && (
-                <>
-                    <TopicComplete /> 
-                </>
-            )}
+        <div className="min-h-screen flex flex-col items-center px-4 pt-6 pb-10">
+            <div className="w-full max-w-2xl flex items-center gap-4 h-10">
+                <Link
+                    href={`/documents/${documentId}/topics`}
+                    aria-label="Back to topics"
+                    className="btn btn-ghost h-9 w-9 px-0 shrink-0"
+                >
+                    ✕
+                </Link>
+
+                {progress !== undefined && (
+                    <ProgressBar progress={progress} className="flex-1" />
+                )}
+            </div>
+
+            <div className="flex-1 w-full max-w-2xl flex flex-col items-center justify-center py-8">
+                {currentCard ? (
+                    <FlashcardTask
+                        card={currentCard}
+                        cardState={cardState}
+                        onReveal={() => setCardState("shown")}
+                        onReview={review}
+                    />
+                ) : breakData ? (
+                    <RestingPeriod timeLeft={breakTimeLeft} documentId={documentId} />
+                ) : questions ? (
+                    <QuestionTask
+                        question={questions[Math.min(currentQuestion, 6)]}
+                        selectedAnswer={selectedAnswer}
+                        questionResponse={questionResponse}
+                        onAnswer={submitAnswer}
+                    />
+                ) : state == "complete" && (
+                    <TopicComplete documentId={documentId} />
+                )}
+            </div>
         </div>
     )
 }
-

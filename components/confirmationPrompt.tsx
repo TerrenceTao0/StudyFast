@@ -12,33 +12,28 @@ export default function ConfirmationPrompt({
     onNo
 }: Props) {
     return (
-        <div className="
-            fixed inset-0 flex items-center justify-center bg-black/30 z-50
-        ">
-            <div className="
-                bg-white border border-black rounded-md p-6 w-80 flex flex-col gap-5
-            ">
-                <p className="text-center">
+        <div
+            className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50 p-4"
+            onClick={onNo}
+        >
+            <div
+                className="card p-6 w-full max-w-sm flex flex-col gap-6"
+                onClick={(event) => event.stopPropagation()}
+            >
+                <p className="text-center text-lg font-bold">
                     {message}
                 </p>
 
-                <div className="flex justify-center gap-4">
-                    <button
-                        onClick={onYes}
-                        className="button transition-all !bg-green-400"
-                    >
-                        Yes
+                <div className="flex gap-3">
+                    <button onClick={onNo} className="btn btn-ghost flex-1">
+                        Cancel
                     </button>
 
-                    <button
-                        onClick={onNo}
-                        className="button transition-all"
-                    >
-                        No
+                    <button onClick={onYes} className="btn btn-danger flex-1">
+                        Delete
                     </button>
                 </div>
             </div>
         </div>
     )
 }
-

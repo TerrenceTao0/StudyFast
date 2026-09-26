@@ -1,11 +1,13 @@
 "use client"
 
 import NavBar from "@/components/navbar"
-import { redirect } from "next/navigation"
+import { useRouter } from "next/navigation"
 
 //
 
 export default function Account() {
+    const router = useRouter()
+
     async function logout() {
         const response = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/auth/logout`,
@@ -17,7 +19,7 @@ export default function Account() {
 
 
         if (response.ok) {
-            redirect("/")
+            router.push("/")
         }
     }
 
@@ -26,10 +28,14 @@ export default function Account() {
         <>
             <NavBar />
 
-            <div className="w-full h-screen flex items-center justify-center">
-                <div className="w-70 h-100 bg-white border-black border-1 flex flex-col justify-center items-center">
-                    <button 
-                        className="button transition-all !bg-red-500"
+            <div className="w-full min-h-screen flex items-center justify-center p-6">
+                <div className="card w-full max-w-sm p-7 flex flex-col gap-6">
+                    <h1 className="text-2xl font-extrabold">
+                        Account
+                    </h1>
+
+                    <button
+                        className="btn btn-danger w-full"
                         onClick={logout}
                     >
                         Logout
@@ -39,4 +45,3 @@ export default function Account() {
         </>
     )
 }
-

@@ -1,17 +1,27 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fff;
-  --foreground: #403f3f;
-  --accent: #535252;
-  --primary: #72b1f6;
+  --background: #fafbfc;
+  --foreground: #2f2e33;
+  --accent: #6b6a72;
+  --primary: #4f9cf0;
+  --primary-soft: #e8f2fe;
+  --border: #e3e5ea;
+  --surface: #ffffff;
+  --danger: #e5484d;
+  --success: #30a46c;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
+  --color-primary-soft: var(--primary-soft);
   --color-accent: var(--accent);
+  --color-border: var(--border);
+  --color-surface: var(--surface);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -19,33 +29,39 @@
 body {
   background-color: var(--background);
   background-image:
-    linear-gradient(#e5e7eb 1px, transparent 1px),
-    linear-gradient(90deg, #e5e7eb 1px, transparent 1px);
+    linear-gradient(#eef0f3 1px, transparent 1px),
+    linear-gradient(90deg, #eef0f3 1px, transparent 1px);
   background-size: 24px 24px;
-  color: black;
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--foreground);
 }
 
-h1 {
-  font-size: 50px;
-}
+@layer components {
+  .card {
+    @apply bg-surface border border-border rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.04),0_4px_16px_rgba(0,0,0,0.04)];
+  }
 
-.button {
-  background-color: var(--foreground);
-  font-size: 15px;
-  border-radius: 5px;
-  padding: 5px;
-  cursor: pointer;
-  color: white;
-  width: 200px;
-  height: 35px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 h-10 px-5 rounded-xl text-[15px] font-bold
+      text-white bg-foreground cursor-pointer select-none transition-all duration-150
+      hover:brightness-110 hover:-translate-y-px active:translate-y-0 active:scale-[0.98]
+      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary
+      disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0 disabled:scale-100 disabled:brightness-100;
+  }
 
-.button:hover {
-  background-color: var(--primary);
-  width: 240px;
-  color: white;
+  .btn-primary { @apply bg-primary; }
+  .btn-danger { @apply bg-danger; }
+  .btn-success { @apply bg-success; }
+
+  .btn-ghost {
+    @apply bg-surface text-foreground border border-border hover:bg-background hover:brightness-100;
+  }
+
+  .input {
+    @apply w-full h-10 px-3 rounded-lg bg-surface border border-border outline-none transition-all
+      focus:border-primary focus:ring-4 focus:ring-primary/15;
+  }
+
+  .input-error {
+    @apply border-danger bg-red-50 focus:border-danger focus:ring-danger/15;
+  }
 }

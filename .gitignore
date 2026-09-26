@@ -42,3 +42,5 @@ next-env.d.ts
 
 # other 
 fastapi/api/uploads/
+__pycache__/
+*.pyc
