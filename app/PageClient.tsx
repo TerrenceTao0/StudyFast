@@ -98,7 +98,10 @@ export default function LandingPage() {
             </h2>
 
             <div className="flex flex-col gap-1.5 group">
-                <label htmlFor="email" className="text-sm font-bold text-accent group-focus-within:text-primary transition-colors">
+                <label 
+                  htmlFor="email" 
+                  className="text-sm font-bold text-accent group-focus-within:text-primary transition-colors"
+                >
                     Email
                 </label>
 
@@ -106,6 +109,7 @@ export default function LandingPage() {
                     id="email"
                     type="email"
                     required
+                    autoFocus
                     value={email}
                     onChange={updateEmail}
                     className={`input ${emailError != "" ? "input-error" : ""}`}

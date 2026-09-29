@@ -33,9 +33,9 @@ export default function NavBar() {
             fixed top-3 left-1/2 -translate-x-1/2 z-40 w-[calc(100%-2rem)] max-w-xl h-14 px-3
             flex items-center justify-between card rounded-2xl backdrop-blur bg-surface/90
         ">
-            <Link href="/home" className="text-lg font-extrabold pl-2">
+            <span className="text-lg font-extrabold pl-2">
                 Study<span className="text-primary">Fast</span>
-            </Link>
+            </span>
 
             <div className="flex gap-1">
                 <NavButton href="/home">Home</NavButton>
@@ -44,3 +44,4 @@ export default function NavBar() {
         </nav>
     )
 }
+

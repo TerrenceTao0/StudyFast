@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session, selectinload
 from database import get_db
 from models import Document, User, Topic
 from routers.auth import get_current_user
-from services.document_processing import UPLOAD_PATH
+from services.document_processing import UPLOAD_PATH, UnreadableDocumentError, extract_text
 
 ##
 
@@ -21,7 +21,8 @@ router = APIRouter(
     tags=["documents"]
 )
 
-MAX_FILE_SIZE = 40 * 1024 * 1024  # 40 MB
+MIN_FILE_SIZE = 1 * 1024 # 1 KB
+MAX_FILE_SIZE = MIN_FILE_SIZE * 1024 * 35  # 35 MB
 ALLOWED_EXTENSIONS = {".pdf", ".docx", ".txt"}
 
 ##
@@ -130,6 +131,26 @@ def upload(
 
 
         raise
+
+
+    if (size < MIN_FILE_SIZE):
+        raise HTTPException(
+            status_code=422,
+            detail="File is too small."
+        )
+
+
+    # Reject files without readable text (e.g. scanned PDFs) before they are queued.
+    try:
+        extract_text(file_path)
+
+    except UnreadableDocumentError as error:
+        file_path.unlink()
+
+        raise HTTPException(
+            status_code=422,
+            detail=str(error)
+        )
 
 
     document = Document(
@@ -256,7 +277,7 @@ def deleteDocument(
 
     if (document is None):
         raise HTTPException(
-            status=404,
+            status_code=404,
             detail="Document not found."
         )
 

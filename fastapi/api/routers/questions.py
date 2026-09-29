@@ -294,7 +294,6 @@ def answer_question(
         return {
             "correct": correct,
             "answer": question.answer,
-            "explanation": question.explanation,
             "finished": True
         }
 
@@ -303,6 +302,5 @@ def answer_question(
         return {
             "correct": correct,
             "answer": question.answer,
-            "explanation": question.explanation,
         }
 

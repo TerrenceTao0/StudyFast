@@ -105,6 +105,7 @@ export default function Home() {
                     id="email"
                     type="email"
                     required
+                    autoFocus
                     value={email}
                     onChange={updateEmail}
                     className={`input ${emailError != "" ? "input-error" : ""}`}

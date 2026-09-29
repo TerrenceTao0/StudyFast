@@ -6,17 +6,15 @@ export default function ProgressBar({
     className?: string
 }) {
     return (
-        <div className={`flex items-center gap-2 ${className ?? ""}`}>
-            <div className="flex-1 h-2.5 bg-border rounded-full overflow-hidden">
-                <div
-                    className="h-full bg-primary rounded-full transition-all duration-500"
-                    style={{
-                        width: `${progress}%`
-                    }}
-                />
-            </div>
+        <div className={`relative h-5 bg-border rounded-full overflow-hidden ${className ?? ""}`}>
+            <div
+                className="h-full bg-primary rounded-full transition-all duration-500"
+                style={{
+                    width: `${progress}%`
+                }}
+            />
 
-            <span className="text-xs font-bold text-accent tabular-nums min-w-9 text-right">
+            <span className="absolute inset-0 flex items-center justify-center text-[11px] font-extrabold text-foreground tabular-nums">
                 {progress}%
             </span>
         </div>

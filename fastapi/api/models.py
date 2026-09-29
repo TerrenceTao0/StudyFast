@@ -26,6 +26,17 @@ class User(Base):
         nullable=False
     )
 
+    uploads: Mapped[int] = mapped_column(
+        default=0,
+        nullable=False        
+    )
+
+    last_upload: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
+
 
     # User -< many Document
     documents: Mapped[list["Document"]] = relationship(

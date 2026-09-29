@@ -82,6 +82,26 @@ def process_document(document_id: int):
         # Status will also become "pending" so that processing can try again.
         db.commit()
 
+    # Unrecoverable, so delete the document and its file instead of retrying.
+    except document_processing.UnreadableDocumentError:
+        db.rollback()
+
+        document = db.get(
+            Document,
+            document_id
+        )
+
+        if (document is not None):
+            (
+                document_processing.UPLOAD_PATH
+                / str(document.user_id)
+                / document.stored_filename
+            ).unlink(missing_ok=True)
+
+            db.delete(document)
+            db.commit()
+
+
     except Exception:
         db.rollback()
 

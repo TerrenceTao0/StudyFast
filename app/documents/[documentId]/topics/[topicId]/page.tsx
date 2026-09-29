@@ -9,6 +9,8 @@ import { getDocument } from "@/lib/document"
 
 //
 
+const OPTION_LETTERS = ["A", "B", "C", "D"]
+
 type Flashcard = {
     id: number
     front: string
@@ -89,8 +91,6 @@ function LabeledText({ text }: { text: string }) {
     )
 }
 
-
-const OPTION_LETTERS = ["A", "B", "C", "D"]
 
 function FlashcardTask({
     card,
@@ -272,7 +272,6 @@ export default function Topic() {
     // Card states - hidden, shown
     const [cardState, setCardState] = useState("hidden")
 
-    const [document, setDocument] = useState<DocumentData>()
     const [currentCard, setCurrentCard] = useState<Flashcard>()
     const [breakData, setBreakData] = useState<Data>()
     const [breakTimeLeft, setBreakTimeLeft] = useState<string>("")
@@ -281,20 +280,6 @@ export default function Topic() {
     const [currentQuestion, setCurrentQuestion] = useState<number>(0)
     const [questionResponse, setQuestionResponse] = useState<QuestionResponse>()
     const [selectedAnswer, setSelectedAnswer] = useState("")
-
-    useEffect(() => {
-        async function get() {
-            const data = await getDocument(documentId)
-            
-            if (data) {
-                setDocument(data)
-            }
-        }
-
-
-        get()
-    }, [])
-
 
     {/* 
         getFlashcard also checks if user has finished flashcard tasks. 
@@ -513,27 +498,28 @@ export default function Topic() {
 
 
 
-    const progress = breakData
-        ? breakData.completion || 0
-        : questions
-            ? Math.round(currentQuestion / 7 * 1000) / 10 || 0
-            : undefined
+    const progress = questions
+        ? Math.round(currentQuestion / 7 * 1000) / 10 || 0
+        : undefined
 
     return (
         <div className="min-h-screen flex flex-col items-center px-4 pt-6 pb-10">
-            <div className="w-full max-w-2xl flex items-center gap-4 h-10">
-                <Link
-                    href={`/documents/${documentId}/topics`}
-                    aria-label="Back to topics"
-                    className="btn btn-ghost h-9 w-9 px-0 shrink-0"
-                >
-                    ✕
-                </Link>
+            {/* Break time has its own progress bar and back button. */}
+            {!breakData && (
+                <div className="w-full max-w-2xl flex items-center gap-4 h-10">
+                    <Link
+                        href={`/documents/${documentId}/topics`}
+                        aria-label="Back to topics"
+                        className="btn btn-ghost h-9 w-9 px-0 shrink-0"
+                    >
+                        ✕
+                    </Link>
 
-                {progress !== undefined && (
-                    <ProgressBar progress={progress} className="flex-1" />
-                )}
-            </div>
+                    {progress !== undefined && (
+                        <ProgressBar progress={progress} className="flex-1" />
+                    )}
+                </div>
+            )}
 
             <div className="flex-1 w-full max-w-2xl flex flex-col items-center justify-center py-8">
                 {currentCard ? (
@@ -544,7 +530,10 @@ export default function Topic() {
                         onReview={review}
                     />
                 ) : breakData ? (
-                    <RestingPeriod timeLeft={breakTimeLeft} documentId={documentId} />
+                    <div className="w-full flex flex-col gap-3">
+                        <ProgressBar progress={breakData.completion || 0} />
+                        <RestingPeriod timeLeft={breakTimeLeft} documentId={documentId} />
+                    </div>
                 ) : questions ? (
                     <QuestionTask
                         question={questions[Math.min(currentQuestion, 6)]}

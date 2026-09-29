@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import ProgressBar from "@/components/progressBar"
 import ConfirmationPrompt from "@/components/confirmationPrompt"
+import NoticePrompt from "@/components/noticePrompt"
 
 //
 
@@ -95,14 +96,14 @@ function Document({
     const ready = document.status === "ready"
 
     return (
-        <div className="relative group">
+        <div className={`relative group transition-all ${ready ? "hover:-translate-y-1" : ""}`}>
             <button
                 onClick={onOpen}
                 disabled={!ready}
                 className="
                     card w-full h-40 p-4 flex flex-col justify-between text-left transition-all
-                    enabled:cursor-pointer enabled:hover:-translate-y-1 enabled:hover:shadow-lg
-                    enabled:hover:border-primary disabled:cursor-wait
+                    enabled:cursor-pointer enabled:group-hover:shadow-lg
+                    enabled:group-hover:border-primary disabled:cursor-wait
                 "
             >
                 {ready ? (
@@ -150,6 +151,7 @@ export default function Home() {
     const router = useRouter()
     const [documents, setDocuments] = useState<DocumentData[]>()
     const [documentToDelete, setDocumentToDelete] = useState<number>()
+    const [uploadError, setUploadError] = useState("")
 
     useEffect(() => {
         getDocuments()
@@ -230,6 +232,9 @@ export default function Home() {
     async function uploadFile(event: React.ChangeEvent<HTMLInputElement>) {
         const file = event.target.files?.[0] ?? null
 
+        // Reset so selecting the same file again still triggers onChange.
+        event.target.value = ""
+
         if (!file) {
             return
         }
@@ -237,18 +242,29 @@ export default function Home() {
 
         const formData = new FormData()
         formData.append("file", file)
+        setUploadError("")
 
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/documents/upload`,
-            {
-                "method": "POST",
-                "credentials": "include",
-                "body": formData
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/documents/upload`,
+                {
+                    "method": "POST",
+                    "credentials": "include",
+                    "body": formData
+                }
+            )
+
+
+            if (!response.ok) {
+                const json = await response.json().catch(() => ({}))
+                setUploadError(json.detail ?? "Upload failed.")
+
+                return
             }
-        )
+        }
+        catch {
+            setUploadError("Upload failed.")
 
-
-        if (!response.ok) {
             return
         }
 
@@ -286,6 +302,13 @@ export default function Home() {
                         ))}
                     </div>
                 </div>
+            )}
+
+            {uploadError && (
+                <NoticePrompt 
+                    message={uploadError}
+                    onOkay={() => setUploadError("")}
+                />
             )}
 
             {documentToDelete && (
