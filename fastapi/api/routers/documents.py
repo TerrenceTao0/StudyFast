@@ -9,6 +9,8 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
+from datetime import datetime, timezone
+
 from database import get_db
 from models import Document, User, Topic
 from routers.auth import get_current_user
@@ -24,8 +26,20 @@ router = APIRouter(
 MIN_FILE_SIZE = 1 * 1024 # 1 KB
 MAX_FILE_SIZE = MIN_FILE_SIZE * 1024 * 35  # 35 MB
 ALLOWED_EXTENSIONS = {".pdf", ".docx", ".txt"}
+MAX_DAILY_UPLOADS_FREE = 1
+MAX_DAILY_UPLOADS_PAID = 5
 
 ##
+
+def uploads_today(user):
+    today = datetime.now(timezone.utc).date()
+
+    if (user.last_upload.astimezone(timezone.utc).date() != today):
+        return 0 
+
+
+    return user.uploads
+
 
 def get_topics_and_document_mastery(current_user, document):
     topics = []
@@ -88,6 +102,32 @@ def upload(
         raise HTTPException(
             status_code=400,
             detail="File type is not supported."
+        )
+
+
+    db.refresh(current_user, with_for_update=True)
+    user_uploads_today = uploads_today(current_user)
+
+    if (user_uploads_today >= MAX_DAILY_UPLOADS_FREE):
+        raise HTTPException(
+            status_code=429,
+            detail="You reached your daily upload limit."
+        ) 
+
+
+    # Stop users from uploading multiple files at once to help reduce server load / api load.
+    query = (
+        select(Document.id)
+        .where(
+            Document.user_id == current_user.id,
+            Document.status.in_(["pending", "processing"])
+        )
+    ).limit(1)
+
+    if (db.scalar(query)):
+        raise HTTPException(
+            status_code=429,
+            detail="Wait for your previous upload to finish."
         )
 
 
@@ -162,6 +202,9 @@ def upload(
         size_bytes=size
     )
 
+
+    current_user.last_upload = datetime.now(timezone.utc)
+    current_user.uploads = user_uploads_today + 1
 
     try:
         db.add(document)
