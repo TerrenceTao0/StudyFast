@@ -17,19 +17,6 @@ type Flashcard = {
     back: string
 }
 
-type TopicData = {
-    id: number
-    name: string
-    mastery: number
-    status: string
-}
-
-type DocumentData = {
-    title: string
-    mastery: number
-    topics: TopicData[]
-}
-
 type Data = {
     completion: number, 
     soonest_due: string
@@ -171,7 +158,7 @@ function QuestionTask({
                                 card min-h-20 px-4 py-3 flex items-center gap-3 text-left cursor-pointer
                                 transition-all duration-150 border-2 hover:-translate-y-0.5 hover:border-primary
                                 active:translate-y-0 active:scale-[0.98]
-                                ${isAnswer ? "!border-success !bg-green-50" : choseWrong ? "!border-danger !bg-red-50" : ""}
+                                ${isAnswer ? "border-success! bg-green-50!" : choseWrong ? "border-danger! bg-red-50!" : ""}
                             `}
                         >
                             <span className={`
@@ -499,7 +486,7 @@ export default function Topic() {
 
 
     const progress = questions
-        ? Math.round(currentQuestion / 7 * 1000) / 10 || 0
+        ? Math.round(currentQuestion / questions.length * 1000) / 10 || 0
         : undefined
 
     return (
@@ -536,7 +523,7 @@ export default function Topic() {
                     </div>
                 ) : questions ? (
                     <QuestionTask
-                        question={questions[Math.min(currentQuestion, 6)]}
+                        question={questions[Math.min(currentQuestion, questions.length - 1)]}
                         selectedAnswer={selectedAnswer}
                         questionResponse={questionResponse}
                         onAnswer={submitAnswer}

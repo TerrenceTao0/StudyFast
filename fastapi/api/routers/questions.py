@@ -85,17 +85,16 @@ def get_questions(
     
     session = db.scalar(session_query)
 
-    if (session):
-        topic_mastery = db.scalar(
-            select(TopicMastery)
-            .where(
-                TopicMastery.topic_id == topic_id,
-                TopicMastery.user_id == current_user.id
-            )
+    topic_mastery = db.scalar(
+        select(TopicMastery)
+        .where(
+            TopicMastery.topic_id == topic_id,
+            TopicMastery.user_id == current_user.id
         )
+    )
 
-
-        questions = None 
+    if (session):
+        questions = None
 
         if (topic_mastery):
             if (session.round > topic_mastery.round):
@@ -156,7 +155,8 @@ def get_questions(
         user_id=current_user.id,
         topic_id=topic_id,
         current_question_index=0,
-        question_ids=ids
+        question_ids=ids,
+        round=topic_mastery.round if topic_mastery else 0
     )
 
 
