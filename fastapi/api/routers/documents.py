@@ -134,6 +134,8 @@ def upload(
 
 
     if (size < MIN_FILE_SIZE):
+        file_path.unlink()
+
         raise HTTPException(
             status_code=422,
             detail="File is too small."
@@ -285,3 +287,13 @@ def deleteDocument(
     db.delete(document)
     db.commit()
 
+
+    # Delete file after commit otherwise file could be removed while the row still exists in the DB.
+    user_directory = (
+        UPLOAD_PATH / str(current_user.id)
+    )
+
+    stored_filename = document.stored_filename
+    file_path = (user_directory / stored_filename)
+    file_path.unlink()
+    
