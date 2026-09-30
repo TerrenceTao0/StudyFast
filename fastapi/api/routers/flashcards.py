@@ -74,6 +74,13 @@ def get_flashcard(
         )
 
 
+    if (topic_mastery and topic_mastery.status == "locked"):
+        raise HTTPException(
+            status_code=403,
+            detail="Topic is locked."
+        )
+
+    
     now = datetime.now(timezone.utc)
     new_card = None
     soonest_due = None 
@@ -190,7 +197,7 @@ def review(
             detail="Flashcard not found."
         )
 
-
+        
     progress = db.scalar(
         select(FlashcardProgress)
         .where(

@@ -1,6 +1,6 @@
 "use client"
 
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import ProgressBar from "@/components/progressBar"
 import { useEffect, useState } from "react"
 import Link from "next/link"
@@ -26,14 +26,15 @@ type QuestionData = {
     id: number,
     question: string, 
     options: string[],
-    difficulty: string 
+    difficulty: string
 }
 
 type QuestionResponse = {
     correct: boolean, 
     answer: string,
     explanation: string, 
-    mastery: number
+    mastery: number,
+    finished?: boolean
 }
 
 //
@@ -233,6 +234,7 @@ function TopicComplete({ documentId }: { documentId: string }) {
 //
 
 export default function Topic() {
+    const router = useRouter()
     const params = useParams()
     const documentId = params.documentId as string 
     const topicId = params.topicId as string 
@@ -314,7 +316,16 @@ export default function Topic() {
         if (selectedAnswer != "" && !questionResponse?.correct) {
             setQuestionResponse(undefined)
             setSelectedAnswer("")
-            setCurrentQuestion(Math.min(questions!.length - 1, currentQuestion + 1))
+
+            if (questionResponse?.finished) { 
+                setQuestions(undefined)
+                setState("complete")
+                setCurrentQuestion(0)
+            }
+            else {
+                setCurrentQuestion(Math.min(questions!.length - 1, currentQuestion + 1))
+            }
+
 
             return 
         }
@@ -434,7 +445,10 @@ export default function Topic() {
                     setBreakData(undefined)
                     setState("questions")
                 }
-            } 
+            }
+            else if (response.status == 403) {
+                router.replace(`/documents/${documentId}/topics`)
+            }
         }
         catch {
 

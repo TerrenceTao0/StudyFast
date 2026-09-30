@@ -338,5 +338,8 @@ def deleteDocument(
 
     stored_filename = document.stored_filename
     file_path = (user_directory / stored_filename)
-    file_path.unlink()
+
+    if (file_path.exists()):
+        file_path.unlink()
+
     

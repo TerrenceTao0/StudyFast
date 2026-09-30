@@ -93,18 +93,18 @@ def get_questions(
         )
     )
 
+    if (topic_mastery and topic_mastery.status == "locked"):
+        raise HTTPException(
+            status_code=403,
+            detail="Topic is locked."
+        )
+
+
     if (session):
         questions = None
 
         if (topic_mastery):
-            if (session.round > topic_mastery.round):
-                raise HTTPException(
-                    status_code=409,
-                    detail="Session is already completed."
-                )
-
-
-            elif (session.round < topic_mastery.round):
+            if (session.round < topic_mastery.round):
                 # Session is old - generate new session.
                 questions = generate_questions(db, current_user, topic_id)
 
@@ -117,6 +117,12 @@ def get_questions(
                 session.round = topic_mastery.round 
 
                 db.commit()
+
+            elif (session.current_question_index >= len(session.question_ids)):
+                raise HTTPException(
+                    status_code=409,
+                    detail="Session is already completed."
+                )
 
 
         if (not questions):
@@ -208,6 +214,13 @@ def answer_question(
         )
 
 
+    if (topic_mastery and topic_mastery.status == "locked"):
+        raise HTTPException(
+            status_code=403,
+            detail="Topic is locked."
+        )
+
+    
     # User is trying to answer questions when they haven't finished flashcard task yet.
     if (session.round < topic_mastery.round):
         raise HTTPException(
@@ -218,8 +231,15 @@ def answer_question(
         
     question_ids = session.question_ids
     current_question_index = session.current_question_index
+
+    if (current_question_index >= len(question_ids)):
+        raise HTTPException(
+            status_code=409,
+            detail="Question session is finished."
+        )
+
     
-    # User might be trying to answer the a random/wrong question.
+    # User is trying to answer a random/wrong question.
     if (question_ids[current_question_index] != question_id):
         raise HTTPException(
             status_code=400,
@@ -243,25 +263,8 @@ def answer_question(
         )
 
 
-    finished = session.current_question_index + 1 >= len(question_ids)
-
-    if (finished):
-        if (session.round > topic_mastery.round):
-            raise HTTPException(
-                status_code=409,
-                detail="Question session is finished."
-            ) 
-
-
-        # User completed their daily question set - wait until they complete their next flashcard round.
-        session.current_question_index = 0 
-        session.round = topic_mastery.round + 1 
-
-    else:
-        # User should progress to next question in the set.
-        session.current_question_index += 1 
-
-
+    session.current_question_index += 1
+    finished = session.current_question_index >= len(question_ids)
     correct = user_answer.user_answer == question.answer
 
     mastery_record = db.scalar(
@@ -289,7 +292,7 @@ def answer_question(
             )
 
 
-            if (next_topic_mastery):
+            if (next_topic_mastery and mastery + 4 >= 15):
                 next_topic_mastery.status = "unlocked"
 
 
