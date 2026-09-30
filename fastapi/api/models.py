@@ -126,6 +126,13 @@ class Document(Base):
         nullable=False
     )
 
+
+    # Extracted at upload so the worker doesn't need access to the uploaded file.
+    text: Mapped[str] = mapped_column(
+        Text,
+        nullable=False
+    )
+
     uploaded_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now()

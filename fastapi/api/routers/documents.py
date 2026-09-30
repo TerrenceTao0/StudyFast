@@ -183,23 +183,26 @@ def upload(
 
 
     # Reject files without readable text (e.g. scanned PDFs) before they are queued.
+    # Only the text is kept, so the file is deleted either way.
     try:
-        extract_text(file_path)
+        text = extract_text(file_path)
 
     except UnreadableDocumentError as error:
-        file_path.unlink()
-
         raise HTTPException(
             status_code=422,
             detail=str(error)
         )
+
+    finally:
+        file_path.unlink()
 
 
     document = Document(
         user_id=current_user.id,
         original_filename=file.filename,
         stored_filename=stored_filename,
-        size_bytes=size
+        size_bytes=size,
+        text=text
     )
 
 
@@ -213,10 +216,6 @@ def upload(
 
     except Exception:
         db.rollback()
-
-        if (file_path.exists()):
-            file_path.unlink()
-
 
         raise
 
@@ -329,17 +328,5 @@ def deleteDocument(
 
     db.delete(document)
     db.commit()
-
-
-    # Delete file after commit otherwise file could be removed while the row still exists in the DB.
-    user_directory = (
-        UPLOAD_PATH / str(current_user.id)
-    )
-
-    stored_filename = document.stored_filename
-    file_path = (user_directory / stored_filename)
-
-    if (file_path.exists()):
-        file_path.unlink()
 
     

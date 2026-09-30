@@ -23,6 +23,9 @@ class UnreadableDocumentError(Exception):
 ##
 
 def clean_text(text: str):
+    # Postgres text columns can't store NUL characters, which some PDFs produce.
+    text = text.replace("\x00", "")
+
     # Replace repeated spaces/tabs with one space
     text = re.sub(r"[ \t]+", " ", text)
 

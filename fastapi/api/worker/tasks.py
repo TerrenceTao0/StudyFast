@@ -51,13 +51,7 @@ def process_document(document_id: int):
         document.title = "Processing..."
         db.commit()
 
-        document_path = (
-            document_processing.UPLOAD_PATH 
-            / str(document.user_id) 
-            / document.stored_filename
-        )
-        document_text = document_processing.extract_text(document_path)
-        ai_response = document_processing.analyze(document_text)
+        ai_response = document_processing.analyze(document.text)
 
         # Convert the nested AI response into related database objects.
         for i, topic_data in enumerate(ai_response["topics"]):
@@ -81,26 +75,6 @@ def process_document(document_id: int):
         # If construction fails before this commit, no partially generated material is saved.
         # Status will also become "pending" so that processing can try again.
         db.commit()
-
-    # Unrecoverable, so delete the document and its file instead of retrying.
-    except document_processing.UnreadableDocumentError:
-        db.rollback()
-
-        document = db.get(
-            Document,
-            document_id
-        )
-
-        if (document is not None):
-            (
-                document_processing.UPLOAD_PATH
-                / str(document.user_id)
-                / document.stored_filename
-            ).unlink(missing_ok=True)
-
-            db.delete(document)
-            db.commit()
-
 
     except Exception:
         db.rollback()
