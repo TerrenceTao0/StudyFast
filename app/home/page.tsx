@@ -157,7 +157,8 @@ export default function Home() {
         getDocuments()
     }, [])
 
-    // Poll user's documents so they can see the status of their documents live.
+    
+    // Poll user's documents every second so they can see the status of their documents live.
     useEffect(() => {
         const processing = documents?.some(
             (document) =>
@@ -173,7 +174,7 @@ export default function Home() {
 
         const timeout = setTimeout(() => {
             getDocuments()
-        }, 2000)
+        }, 1000)
 
 
         return () => clearTimeout(timeout)

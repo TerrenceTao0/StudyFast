@@ -111,7 +111,6 @@ export default function Home() {
 
     const [document, setDocument] = useState<DocumentData>()
 
-    // Check user's uploaded documents at the start of page mount
     useEffect(() => {
         async function get() {
             const data = await getDocument(documentId)
@@ -123,7 +122,7 @@ export default function Home() {
 
 
         get()
-    }, [])
+    }, [documentId])
 
 
     return (

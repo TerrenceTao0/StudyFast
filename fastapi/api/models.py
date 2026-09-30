@@ -70,7 +70,7 @@ class TopicMastery(Base):
     )
 
 
-    # Statuses - locked, unlocked, mastered
+    # Statuses - locked, unlocked
     status: Mapped[str] = mapped_column(
         String(20),
         nullable=False,

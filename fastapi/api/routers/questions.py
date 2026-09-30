@@ -177,15 +177,13 @@ def answer_question(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    query = (
+    session = db.scalar((
         select(QuestionSession)
         .where(
             QuestionSession.topic_id == topic_id,
             QuestionSession.user_id == current_user.id
         )
-    )
-
-    session = db.scalar(query)
+    ))
 
     if (not session):
         raise HTTPException(
@@ -196,6 +194,7 @@ def answer_question(
 
     topic_mastery = db.scalar(
         select(TopicMastery)
+        .join(Topic)
         .where(
             TopicMastery.topic_id == topic_id,
             TopicMastery.user_id == current_user.id
@@ -247,8 +246,8 @@ def answer_question(
     finished = session.current_question_index + 1 >= len(question_ids)
 
     if (finished):
-        if (session.round == topic_mastery.round):
-            HTTPException(
+        if (session.round > topic_mastery.round):
+            raise HTTPException(
                 status_code=409,
                 detail="Question session is finished."
             ) 
@@ -275,15 +274,33 @@ def answer_question(
 
     
     if (mastery_record):
+        mastery = mastery_record.mastery
+
         if (correct):
+            # Increase mastery by 4% and unlock next topic if mastery reaches 15% or more. 
+            next_topic_mastery = db.scalar(
+                select(TopicMastery)
+                .join(Topic)
+                .where(
+                    TopicMastery.user_id == current_user.id,
+                    Topic.document_id == topic_mastery.topic.document_id,
+                    Topic.order_index == topic_mastery.topic.order_index + 1
+                )
+            )
+
+
+            if (next_topic_mastery):
+                next_topic_mastery.status = "unlocked"
+
+
             mastery_record.mastery = min(
-                mastery_record.mastery + 3,
+                mastery + 4,
                 100
             ) 
 
         else:
             mastery_record.mastery = max(
-                mastery_record.mastery - 3,
+                mastery - 2,
                 0
             ) 
 

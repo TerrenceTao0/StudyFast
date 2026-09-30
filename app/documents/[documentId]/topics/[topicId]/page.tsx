@@ -66,6 +66,7 @@ function LabeledText({ text }: { text: string }) {
         lastIndex = regex.lastIndex
     }
 
+    
     // Add whatever normal text remains afterwards
     parts.push(
         text.slice(lastIndex)
@@ -173,22 +174,6 @@ function QuestionTask({
                     )
                 })}
             </div>
-
-
-            {/* User got the question wrong so they should get an explanation on how. */}
-            {questionResponse && selectedAnswer != questionResponse.answer && (
-                <div className="mt-4 p-4 rounded-2xl bg-red-50 border border-danger/30 flex flex-col gap-2">
-                    <span className="text-sm font-bold text-danger">
-                        Not quite
-                    </span>
-
-                    <LabeledText text={questionResponse.explanation} />
-
-                    <span className="text-xs text-accent">
-                        Click any option to continue.
-                    </span>
-                </div>
-            )}
         </div>
     )
 }
@@ -483,11 +468,8 @@ export default function Topic() {
     }
 
 
-
-
-    const progress = questions
-        ? Math.round(currentQuestion / questions.length * 1000) / 10 || 0
-        : undefined
+    const progress = questions ? Math.round(currentQuestion / questions.length * 1000) / 10 || 0 
+    : undefined
 
     return (
         <div className="min-h-screen flex flex-col items-center px-4 pt-6 pb-10">
