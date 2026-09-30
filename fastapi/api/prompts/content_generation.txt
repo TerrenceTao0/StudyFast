@@ -8,7 +8,7 @@ Generate:
 1. A concise descriptive title, maximum 100 characters.
 2. A list of granular topics covered by the material.
 3. Exactly 10 flashcards for each topic.
-4. Exactly 20 multiple-choice question for each topic.
+4. Exactly 20 multiple-choice questions for each topic.
 
 TOPIC REQUIREMENTS
 
@@ -34,17 +34,21 @@ meaningful topics.
 Do not use one broad topic called "Integration" if the material separately
 teaches integration by substitution, integration by parts, and partial
 fractions. Those should be separate topics.
-- Try generate as many topics as possible so it feels like a genuine course.
+- Generate as many topics as the material genuinely supports so it feels like
+a genuine course, but never split or invent topics just to increase the count.
 
 STUDY MATERIAL REQUIREMENTS
 
-- Base all generated content on the supplied material, however, the content may be outdated or wrong. 
-If that is the case, you should fix it / improve it.
+- Base all generated content on the supplied material. Keep its definitions,
+terminology, and conventions, even where other sources phrase them
+differently. Only correct clear typos or unambiguous factual errors.
 - Cover the material broadly rather than focusing too heavily on one section.
 - Prioritize knowledge that is useful to remember, understand, or apply.
 - Avoid trivial or incidental details unless they are important to the
 subject of the material.
-- Avoid duplicate or near-duplicate flashcards.
+- Avoid duplicate or near-duplicate flashcards and questions.
+- If a topic has little material, test it from different angles (definition,
+application, comparison, common mistakes) instead of repeating the same idea.
 - Make flashcards concise and suitable for active recall.
 - Associate every flashcard and every question with exactly one generated topic.
 - Questions should test understanding, application, recognition, or recall,
@@ -52,8 +56,14 @@ rather than merely copy sentences from the source.
 - Include a mixture of easy, medium, and hard questions.
 - Every question must have exactly four distinct answer options.
 - Exactly one answer option must be correct.
-- Incorrect options should be plausible enough to require actual knowledge, 
+- Incorrect options should be plausible enough to require actual knowledge,
 but must still be clearly wrong.
+- The "answer" field must be copied character-for-character from the correct
+option, including any [[native script|romanization]] formatting.
+- Options are shown in random order. Never use options such as "All of the
+above", "None of the above", or "Both A and B", and never refer to an option
+by its letter or position.
+- Do not prefix options with letters or numbers.
 
 GENERAL FORMATTING RULES
 
@@ -97,7 +107,6 @@ text appears, including:
 - flashcard backs
 - practice questions
 - multiple-choice answer options
-- explanations
 - example sentences
 
 7. When an entire example sentence is in the target language, annotate every
@@ -112,7 +121,11 @@ target-language word or meaningful unit that should be readable to a learner.
 
 9. Never leave bare native script when a standard romanization is available.
 
-10. Before returning the generated study material, inspect every
+10. Never put quotation marks around [[native script|romanization]]
+expressions or around sentences made of them. The app already displays
+them in quotes.
+
+11. Before returning the generated study material, inspect every
 target-language word or phrase.
 If it can be represented as [[native script|romanization]], it MUST use
 that format.
@@ -142,29 +155,26 @@ What is the role of "wa" in "watashi wa Anna desu"?
 
 Correct:
 What is the role of [[は|wa]] in
-"[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]"?
+[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]?
 
 Incorrect:
 Which word means "cat"?
-A. neko
-B. inu
-C. tori
-D. sakana
+Options: neko, inu, tori, sakana
 
 Correct:
 Which word means "cat"?
-A. [[猫|neko]]
-B. [[犬|inu]]
-C. [[鳥|tori]]
-D. [[魚|sakana]]
+Options: [[猫|neko]], [[犬|inu]], [[鳥|tori]], [[魚|sakana]]
 
 IMPORTANT LANGUAGE QUESTION RULE
 
-Do not accidentally reveal the answer inside the question.
+Do not accidentally reveal the answer. Because [[native script|romanization]]
+shows both forms together, do not use it where one of the forms is what is
+being tested. This rule takes priority over rules 4 and 9.
 
-For example, if the question asks for the pronunciation of a native-script
-term, do not display its romanization on the front because that would reveal
-the answer.
+- If a question or flashcard front asks for the pronunciation or romanization
+of a term, show only its native script, in quotation marks.
+- If it asks how a term is written, show only its romanization in the
+question, and use only native script in the answer options.
 
 Bad:
 How is [[は|wa]] pronounced when used as the topic particle?
