@@ -28,7 +28,7 @@ export default function LandingPage() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
+        `/api/auth/register`,
         {
           method: "POST",
           headers: {

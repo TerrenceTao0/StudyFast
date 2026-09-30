@@ -10,7 +10,7 @@ export default function Account() {
 
     async function logout() {
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/auth/logout`,
+            `/api/auth/logout`,
             {
                 method: "POST",
                 credentials: "include"

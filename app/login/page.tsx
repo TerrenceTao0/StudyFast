@@ -28,7 +28,7 @@ export default function Home() {
     
     try {
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+            `/api/auth/login`,
             {
                 method: "POST",
                 headers: {

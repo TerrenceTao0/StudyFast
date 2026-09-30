@@ -333,7 +333,7 @@ export default function Topic() {
 
         try {
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/questions/${topicId}/${questions![currentQuestion].id}/answer`,
+                `/api/questions/${topicId}/${questions![currentQuestion].id}/answer`,
                 {
                     method: "POST",
                     credentials: "include",
@@ -387,7 +387,7 @@ export default function Topic() {
     async function getQuestions() {
         try {
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/questions/${topicId}`,
+                `/api/questions/${topicId}`,
                 {
                     credentials: "include"
                 }
@@ -412,7 +412,7 @@ export default function Topic() {
     async function getFlashcard() {
         try {
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/flashcards/${topicId}`,
+                `/api/flashcards/${topicId}`,
                 {
                     credentials: "include"
                 }
@@ -459,7 +459,7 @@ export default function Topic() {
     async function review(answer: string) {
         try {
             await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/flashcards/${currentCard!.id}/review`,
+                `/api/flashcards/${currentCard!.id}/review`,
                 {
                     method: "POST",
                     headers: {

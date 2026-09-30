@@ -185,7 +185,7 @@ export default function Home() {
     async function deleteDocument(documentId: number) {
         try {
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/documents/${documentId}`,
+                `/api/documents/${documentId}`,
                 {
                     method: "DELETE",
                     credentials: "include"
@@ -208,7 +208,7 @@ export default function Home() {
     async function getDocuments() {
         try {
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/documents`,
+                `/api/documents`,
                 {
                     "credentials": "include"
                 }
@@ -247,7 +247,7 @@ export default function Home() {
 
         try {
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/documents/upload`,
+                `/api/documents/upload`,
                 {
                     "method": "POST",
                     "credentials": "include",
