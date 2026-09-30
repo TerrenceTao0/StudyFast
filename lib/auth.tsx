@@ -22,7 +22,7 @@ export async function getUser() {
 
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/auth/account`,
+    `${process.env.API_URL}/auth/account`,
     {
       headers: {
         Cookie: `access_token=${token}`,
