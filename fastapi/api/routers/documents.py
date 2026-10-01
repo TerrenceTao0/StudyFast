@@ -131,7 +131,7 @@ def upload(
         )
 
 
-    # Store document under a unique user folder with name set to user id. 
+    # Save the file temporarily under a folder named after the user id so its text can be extracted.
     # User folder must be dynamically created if it does not exist (first time uploading).
     # Github does not track empty folders so this is also needed to dynamically create "uploads" folder.
     user_directory = (

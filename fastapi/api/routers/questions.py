@@ -26,15 +26,15 @@ class UserAnswer(BaseModel):
 def construct_question_set(questions):
     cleaned_questions = []
     
-    for question in questions:
-        random.shuffle(question.options)
+    for question in questions():
+        options = random.sample(question.options, k=len(question.options))
 
         cleaned_questions.append(
             {
                 "id": question.id,
-                "question": question.question, 
-                "options": question.options,
-                "difficulty": question.difficulty 
+                "question": question.question,
+                "options": options,
+                "difficulty": question.difficulty
             }
         )
 
@@ -221,7 +221,7 @@ def answer_question(
         )
 
     
-    # User is trying to answer questions when they haven't finished flashcard task yet.
+    # Session is from an earlier round; GET /questions regenerates it once the flashcards are completed again.
     if (session.round < topic_mastery.round):
         raise HTTPException(
             status_code=409,

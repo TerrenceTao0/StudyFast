@@ -1,11 +1,11 @@
 "use client"
 
 import { useParams, useRouter } from "next/navigation"
-import ProgressBar from "@/components/progressBar"
 import { useEffect, useState } from "react"
-import Link from "next/link"
 
-import { getDocument } from "@/lib/document"
+import ProgressBar from "@/components/progressBar"
+import Link from "next/link"
+import NoticePrompt from "@/components/noticePrompt"
 
 //
 
@@ -32,7 +32,6 @@ type QuestionData = {
 type QuestionResponse = {
     correct: boolean, 
     answer: string,
-    explanation: string, 
     mastery: number,
     finished?: boolean
 }
@@ -85,12 +84,16 @@ function FlashcardTask({
     card,
     cardState,
     onReveal,
-    onReview
+    onReview,
+    error,
+    ready 
 }: {
     card: Flashcard
     cardState: string
     onReveal: () => void
     onReview: (answer: string) => void
+    error: string,
+    ready: boolean
 }) {
     const shown = cardState == "shown"
 
@@ -98,7 +101,7 @@ function FlashcardTask({
         <div className="flex flex-col gap-6 items-center w-full">
             <div className={`
                 card w-full min-h-80 flex flex-col items-center justify-center text-center p-8 gap-4
-                text-xl transition-all ${shown ? "border-primary/40" : ""}
+                text-xl transition-all ${shown && "border-primary/40"}
             `}>
                 <span className="text-xs font-bold uppercase tracking-wider text-accent">
                     {shown ? "Answer" : "Question"}
@@ -113,11 +116,19 @@ function FlashcardTask({
                 </button>
             ) : (
                 <div className="flex gap-3 w-full max-w-sm">
-                    <button className="btn btn-danger flex-1" onClick={() => onReview("again")}>
+                    <button 
+                        className={`btn btn-danger flex-1 ${error != "" && "btn-ghost"}`} 
+                        disabled={!ready} 
+                        onClick={() => onReview("again")}
+                    >
                         Forgot
                     </button>
 
-                    <button className="btn btn-success flex-1" onClick={() => onReview("good")}>
+                    <button 
+                        className={`btn btn-success flex-1 ${error != "" && "btn-ghost"}`} 
+                        disabled={!ready} 
+                        onClick={() => onReview("good")}
+                    >
                         Remembered
                     </button>
                 </div>
@@ -245,6 +256,11 @@ export default function Topic() {
 
     // Card states - hidden, shown
     const [cardState, setCardState] = useState("hidden")
+
+    // Request states - ready, waiting
+    const [requestState, setRequestState] = useState("ready")
+
+    const [error, setError] = useState("")
 
     const [currentCard, setCurrentCard] = useState<Flashcard>()
     const [breakData, setBreakData] = useState<Data>()
@@ -457,8 +473,10 @@ export default function Topic() {
 
 
     async function review(answer: string) {
+        setRequestState("waiting")
+
         try {
-            await fetch(
+            const response = await fetch(
                 `/api/flashcards/${currentCard!.id}/review`,
                 {
                     method: "POST",
@@ -471,14 +489,23 @@ export default function Topic() {
                     })
                 }
             )
+
+
+            if (response.ok) {
+                await getFlashcard()
+                setCardState("hidden")
+            }
+            else {
+                setError("A server error occured.")
+            }
+
+
+            setRequestState("ready")
         }
         catch {
-
+            setError("A server error occured.")
+            setRequestState("ready")
         }
-
-
-        await getFlashcard()
-        setCardState("hidden")
     }
 
 
@@ -486,48 +513,60 @@ export default function Topic() {
     : undefined
 
     return (
-        <div className="min-h-screen flex flex-col items-center px-4 pt-6 pb-10">
-            {/* Break time has its own progress bar and back button. */}
-            {!breakData && (
-                <div className="w-full max-w-2xl flex items-center gap-4 h-10">
-                    <Link
-                        href={`/documents/${documentId}/topics`}
-                        aria-label="Back to topics"
-                        className="btn btn-ghost h-9 w-9 px-0 shrink-0"
-                    >
-                        ✕
-                    </Link>
+        <>
+            <div className="min-h-screen flex flex-col items-center px-4 pt-6 pb-10">
+                {/* Break time has its own progress bar and back button. */}
+                {!breakData && (
+                    <div className="w-full max-w-2xl flex items-center gap-4 h-10">
+                        <Link
+                            href={`/documents/${documentId}/topics`}
+                            aria-label="Back to topics"
+                            className="btn btn-ghost h-9 w-9 px-0 shrink-0"
+                        >
+                            ✕
+                        </Link>
 
-                    {progress !== undefined && (
-                        <ProgressBar progress={progress} className="flex-1" />
+                        {progress !== undefined && (
+                            <ProgressBar progress={progress} className="flex-1" />
+                        )}
+                    </div>
+                )}
+
+                <div className="flex-1 w-full max-w-2xl flex flex-col items-center justify-center py-8">
+                    {currentCard ? (
+                        <FlashcardTask
+                            card={currentCard}
+                            cardState={cardState}
+                            onReveal={() => setCardState("shown")}
+                            onReview={review}
+                            error={error} 
+                            ready={requestState == "ready"}
+                        />
+                    ) : breakData ? (
+                        <div className="w-full flex flex-col gap-3">
+                            <ProgressBar progress={breakData.completion || 0} />
+                            <RestingPeriod timeLeft={breakTimeLeft} documentId={documentId} />
+                        </div>
+                    ) : questions ? (
+                        <QuestionTask
+                            question={questions[Math.min(currentQuestion, questions.length - 1)]}
+                            selectedAnswer={selectedAnswer}
+                            questionResponse={questionResponse}
+                            onAnswer={submitAnswer}
+                        />
+                    ) : state == "complete" && (
+                        <TopicComplete documentId={documentId} />
                     )}
                 </div>
-            )}
-
-            <div className="flex-1 w-full max-w-2xl flex flex-col items-center justify-center py-8">
-                {currentCard ? (
-                    <FlashcardTask
-                        card={currentCard}
-                        cardState={cardState}
-                        onReveal={() => setCardState("shown")}
-                        onReview={review}
-                    />
-                ) : breakData ? (
-                    <div className="w-full flex flex-col gap-3">
-                        <ProgressBar progress={breakData.completion || 0} />
-                        <RestingPeriod timeLeft={breakTimeLeft} documentId={documentId} />
-                    </div>
-                ) : questions ? (
-                    <QuestionTask
-                        question={questions[Math.min(currentQuestion, questions.length - 1)]}
-                        selectedAnswer={selectedAnswer}
-                        questionResponse={questionResponse}
-                        onAnswer={submitAnswer}
-                    />
-                ) : state == "complete" && (
-                    <TopicComplete documentId={documentId} />
-                )}
             </div>
-        </div>
+
+
+            {error != "" && (
+                <NoticePrompt 
+                    message={error}
+                    onOkay={() => setError("")}
+                />
+            )}
+        </>
     )
 }

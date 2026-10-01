@@ -197,7 +197,7 @@ def review(
             detail="Flashcard not found."
         )
 
-        
+
     progress = db.scalar(
         select(FlashcardProgress)
         .where(
@@ -205,6 +205,7 @@ def review(
             FlashcardProgress.flashcard_id == flashcard.id
         )
     )
+
 
     if (progress is None):
         card = Card()
@@ -218,6 +219,13 @@ def review(
 
     else:
         card = Card.from_json(progress.fsrs_data)
+
+
+    if (card and card.due > datetime.now(timezone.utc)):
+        raise HTTPException(
+            status_code=409,
+            detail="Card is on cooldown."
+        )
 
 
     rating = (

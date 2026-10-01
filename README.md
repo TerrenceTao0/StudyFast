@@ -26,15 +26,16 @@ StudyFast turns a PDF, Word document or text file into a structured course: AI-g
 
 ## Architecture
 
-1. The API streams the file to disk in chunks of 1MB, checks its type, size and readable text, saves a `pending` document and enqueues a job. The request then returns immediately.
-2. A worker marks the document `processing`, extracts and cleans the text, and asks the model for a title, topics, flashcards and questions that must match a strict JSON schema.
+1. The API streams the file to disk in chunks of 1MB, checks its type and size, extracts and cleans its text, saves a `pending` document with that text, deletes the file and enqueues a job. The request then returns immediately.
+2. A worker marks the document `processing` and asks the model to turn the stored text into a title, topics, flashcards and questions that must match a strict JSON schema.
 3. Everything generated for a document is committed in a single transaction, and the status becomes `ready`.
 4. The frontend polls until the document is ready, then the user works through each topic: flashcards first, then the quiz.
 
 ## Engineering highlights
 
 - Generation runs in an RQ worker. Jobs time out after 5 minutes and retry up to 3 times, waiting 10, 30 and 60 seconds between attempts.
-- Errors such as API or network failures reset the document to `pending` and re-raise so RQ retries the job. Unrecoverable errors, such as a corrupt file, raise a dedicated `UnreadableDocumentError`, and the worker deletes the document and the stored file instead of retrying.
+- Errors such as API or network failures reset the document to `pending` and re-raise so RQ retries the job.
+- The extracted text is stored with the document, so the worker never needs the uploaded file and the API and worker can run on separate machines.
 - Strict structured outputs enforce topic, flashcard, question and answer-option counts, plus the difficulty values, so the JSON maps straight onto ORM objects.
 - File type, minimum and maximum size, and whether the file has extractable text are all checked before anything is queued, so no AI budget is spent on files that can't be processed.
 - Each quiz session stores its question IDs and current position, and an answer is accepted only for the current question, so the client can't skip ahead or answer out of order.

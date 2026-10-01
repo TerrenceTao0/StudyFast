@@ -12,11 +12,14 @@ from openai import OpenAI
 UPLOAD_PATH = Path(__file__).resolve().parent.parent / "uploads"
 client = OpenAI()
 
+# Characters (not tokens) kept per document; the model never sees more, so storing more is waste.
+MAX_TEXT_LENGTH = 1_000_000
+
 content_generation_prompt = open(Path(__file__).resolve().parent.parent / "prompts" / "content_generation.txt", "r", encoding="utf-8",).read()
 
 ##
 
-# Raised when a document can never be processed, so retrying is pointless.
+# Raised when a file's text can't be extracted, so the upload is rejected.
 class UnreadableDocumentError(Exception):
     pass
 
@@ -103,7 +106,7 @@ def extract_text(file_path: Path) -> str:
 
 
     # Clean the text to save on context window and speed up processing time.
-    return clean_text(text)
+    return clean_text(text)[:MAX_TEXT_LENGTH]
 
 
 def analyze(text: str) -> dict: 
@@ -116,8 +119,8 @@ def analyze(text: str) -> dict:
 
         instructions=content_generation_prompt,
 
-        # Max context window is 1M tokens so we need to restrict text content size.
-        input=text[:1_000_000],
+        # Also capped here for documents stored before the cap at upload existed.
+        input=text[:MAX_TEXT_LENGTH],
 
         text={
             "format": {
