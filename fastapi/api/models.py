@@ -21,9 +21,17 @@ class User(Base):
         nullable=False
     )
 
-    password_hash: Mapped[str] = mapped_column(
+    password_hash: Mapped[str | None] = mapped_column(
         String(128),
-        nullable=False
+
+        # Users who signed up with Google OAUTH have no password.
+        nullable=True
+    )
+
+    google_sub: Mapped[str | None] = mapped_column(
+        String(255),
+        unique=True,
+        nullable=True
     )
 
     uploads: Mapped[int] = mapped_column(

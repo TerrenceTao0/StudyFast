@@ -1,6 +1,11 @@
-import os 
+import os
+import secrets
+import httpx
+
+from urllib.parse import urlencode
 
 from fastapi import APIRouter, Depends, HTTPException, status, Response, Cookie
+from fastapi.responses import RedirectResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
@@ -17,9 +22,103 @@ router = APIRouter(
     tags=["auth"]
 )
 
+APP_URL = os.environ["APP_URL"]
 IS_PRODUCTION = os.environ.get("IS_PRODUCTION") == "true"
+GOOGLE_CLIENT_ID = os.environ["GOOGLE_CLIENT_ID"]
+GOOGLE_CLIENT_SECRET = os.environ["GOOGLE_CLIENT_SECRET"]
+GOOGLE_REDIRECT_URI = f"{APP_URL}/api/auth/google/callback"
 
 ##
+
+@router.get("/google/login")
+def google_login():
+    state = secrets.token_urlsafe(32)
+
+    params = urlencode({
+        "client_id": GOOGLE_CLIENT_ID,
+        "redirect_uri": GOOGLE_REDIRECT_URI,
+        "response_type": "code",
+        "scope": "openid email",
+        "state": state
+    })
+
+    response = RedirectResponse(f"https://accounts.google.com/o/oauth2/v2/auth?{params}")
+    response.set_cookie(
+        key="oauth_state",
+        value=state,
+        httponly=True,
+        secure=IS_PRODUCTION,
+        samesite="lax",
+        max_age=600
+    )
+
+    return response
+
+
+@router.get("/google/callback")
+def google_callback(
+    code: str | None = None,
+    state: str | None = None,
+    oauth_state: str | None = Cookie(default=None),
+    db: Session = Depends(get_db)
+):
+    # User cancelled on Google's screen, or the state doesn't match the one we issued.
+    if (not code or not state or not oauth_state or not secrets.compare_digest(state, oauth_state)):
+        return RedirectResponse(f"{APP_URL}/login")
+
+
+    token_response = httpx.post(
+        "https://oauth2.googleapis.com/token",
+        data={
+            "code": code,
+            "client_id": GOOGLE_CLIENT_ID,
+            "client_secret": GOOGLE_CLIENT_SECRET,
+            "redirect_uri": GOOGLE_REDIRECT_URI,
+            "grant_type": "authorization_code"
+        }
+    )
+    token_response.raise_for_status()
+
+    profile = httpx.get(
+        "https://openidconnect.googleapis.com/v1/userinfo",
+        headers={"Authorization": f"Bearer {token_response.json()['access_token']}"}
+    ).json()
+
+    if (not profile.get("email_verified")):
+        return RedirectResponse(f"{APP_URL}/login")
+
+
+    user = db.scalar(select(User).where(User.google_sub == profile["sub"]))
+
+    if (user is None):
+        email = profile["email"].lower()
+        user = db.scalar(select(User).where(User.email == email))
+
+        if (user is None):
+            user = User(email=email, google_sub=profile["sub"])
+            db.add(user)
+
+        else:
+            # Existing password account.
+            user.google_sub = profile["sub"]
+
+
+        db.commit()
+
+
+    response = RedirectResponse(f"{APP_URL}/home")
+    response.delete_cookie("oauth_state")
+    response.set_cookie(
+        key="access_token",
+        value=create_access_token(user.id),
+        httponly=True,
+        secure=IS_PRODUCTION,
+        samesite="lax",
+        max_age=60*60*24
+    )
+
+    return response
+
 
 @router.post(
     "/register",
@@ -81,7 +180,8 @@ def login(
     )
     existing_user = db.scalar(query)
 
-    if (not existing_user):
+    # Accounts created with Google have no password to check.
+    if (not existing_user or existing_user.password_hash is None):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Email or password is not correct."

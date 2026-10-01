@@ -158,9 +158,9 @@ export default function LandingPage() {
               <div className="flex-1 border-t border-border" />
             </div>
 
-            <button type="button" className="btn btn-ghost w-full">
+            <Link href="/api/auth/google/login" type="button" className="btn btn-ghost w-full">
               Continue with Google
-            </button>
+            </Link>
 
             <p className="text-sm text-center text-accent mt-2">
               Already have an account?{" "}
