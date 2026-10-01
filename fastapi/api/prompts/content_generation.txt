@@ -264,38 +264,99 @@ Options:
 [[鳥|tori]]
 [[魚|sakana]]
 
-IMPORTANT LANGUAGE QUESTION RULE
+LANGUAGE QUOTATION RULES
 
-Do not accidentally reveal the answer.
+These rules take priority over the general quotation rules.
 
-Because [[native script|romanization]] displays both forms together, do not use
-it where one of those forms is specifically what the learner is being tested on.
-
-This exception takes priority over rules requiring
-[[native script|romanization]] formatting.
-
-- If a question or flashcard front asks for the pronunciation or romanization
-  of a term, show only its native script, in quotation marks.
+1. When an individual target-language word or short expression is the SUBJECT
+   being explicitly discussed, wrap the entire [[native script|romanization]]
+   expression in quotation marks.
 
 Correct:
-Which pronunciation is used for "は" when it functions as the topic particle?
-
-Incorrect:
-Which pronunciation is used for [[は|wa]] when it functions as the topic particle?
-
-- If a question asks how a romanized term is written, show only the romanization
-  in the question, and use only native script in the answer options.
+What does "[[は|wa]]" mean?
 
 Correct:
-Which writing represents "neko"?
-Options:
-猫
-犬
-鳥
-魚
+What role does "[[です|desu]]" play?
+
+Correct:
+What does "[[は|wa]]" mark in
+[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]?
+
+2. Quotation marks indicate that a specific term or expression is being
+   explicitly discussed. They do NOT belong automatically to every
+   [[native script|romanization]] expression.
+
+3. When a target-language word appears normally inside an example sentence,
+   do NOT put quotation marks around it.
+
+Correct:
+What does "[[は|wa]]" mark in
+[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]?
 
 Incorrect:
-Which writing represents [[猫|neko]]?
+What does "[[は|wa]]" mark in
+"[[私|watashi]]" "[[は|wa]]" "[[アンナ|Anna]]" "[[です|desu]]"?
+
+4. A full example sentence written using [[native script|romanization]]
+   expressions should normally have NO quotation marks around the individual
+   words.
+
+Correct:
+[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]
+
+Incorrect:
+"[[私|watashi]]" "[[は|wa]]" "[[アンナ|Anna]]" "[[です|desu]]"
+
+5. Do not quote a word merely because it is target-language text.
+   Quote it only when that specific word or expression is being named,
+   defined, analyzed, contrasted, or explicitly asked about.
+
+Example:
+
+Correct:
+What does "[[は|wa]]" mark in
+[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]?
+
+Here, the first "[[は|wa]]" is quoted because it is the term being discussed.
+The second [[は|wa]] is not quoted because it is simply part of the example
+sentence.
+
+6. Never produce malformed combinations such as:
+
+Incorrect:
+"wa"は
+
+Incorrect:
+wa は
+
+Incorrect:
+"desu"です
+
+Correct:
+"[[は|wa]]"
+
+Correct:
+"[[です|desu]]"
+
+7. If several target-language words form one phrase that is itself being
+   discussed as a single expression, place ONE pair of quotation marks around
+   the entire formatted phrase.
+
+Correct:
+What does "[[おはよう|ohayou]] [[ございます|gozaimasu]]" mean?
+
+Incorrect:
+What does "[[おはよう|ohayou]]" "[[ございます|gozaimasu]]" mean?
+
+8. Example sentences used only as context should not be quoted word-by-word.
+
+Correct:
+What does "[[は|wa]]" mark in
+[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]?
+
+Incorrect:
+What does "[[は|wa]]" mark in
+"[[私|watashi]]" "[[は|wa]]" "[[アンナ|Anna]]" "[[です|desu]]"?
 
 FINAL VALIDATION
 

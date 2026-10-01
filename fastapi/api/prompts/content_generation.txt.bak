@@ -13,122 +13,210 @@ Generate:
 TOPIC REQUIREMENTS
 
 - Order topics in a logical learning progression from foundational concepts
-to more advanced concepts.
+  to more advanced concepts.
 - Earlier topics should contain prerequisite knowledge needed to understand
-later topics.
+  later topics.
 - Do not place an advanced topic before a simpler prerequisite topic.
 - When the source material already follows a sensible teaching order,
-preserve that order.
+  preserve that order.
 - If the material is poorly ordered, reorganize the topics into a more
-pedagogically useful sequence.
+  pedagogically useful sequence.
 - Prefer conceptual dependency over the order in which keywords happen
-to appear.
+  to appear.
 - Keep closely related topics near each other.
 - Avoid duplicate or heavily overlapping topic names.
 - Make topics as granular as reasonably possible.
 - Each topic should focus on one independently learnable concept, skill,
-rule, method, or idea.
+  rule, method, or idea.
 - Avoid broad chapter-sized topics when they can be split into smaller
-meaningful topics.
+  meaningful topics.
 - Example:
-Do not use one broad topic called "Integration" if the material separately
-teaches integration by substitution, integration by parts, and partial
-fractions. Those should be separate topics.
+  Do not use one broad topic called "Integration" if the material separately
+  teaches integration by substitution, integration by parts, and partial
+  fractions. Those should be separate topics.
 - Generate as many topics as the material genuinely supports so it feels like
-a genuine course, but never split or invent topics just to increase the count.
+  a genuine course, but never split or invent topics just to increase the count.
 
 STUDY MATERIAL REQUIREMENTS
 
-- Base all generated content on the supplied material. Keep its definitions,
-terminology, and conventions, even where other sources phrase them
-differently. Only correct clear typos or unambiguous factual errors.
+- Base all generated content on the supplied material.
+- Keep its definitions, terminology, and conventions, even where other sources
+  phrase them differently.
+- Only correct clear typos or unambiguous factual errors.
 - Cover the material broadly rather than focusing too heavily on one section.
 - Prioritize knowledge that is useful to remember, understand, or apply.
-- Avoid trivial or incidental details unless they are important to the
-subject of the material.
+- Avoid trivial or incidental details unless they are important to the subject.
 - Avoid duplicate or near-duplicate flashcards and questions.
-- If a topic has little material, test it from different angles (definition,
-application, comparison, common mistakes) instead of repeating the same idea.
+- If a topic has little material, test it from different angles such as:
+  definition, application, comparison, recognition, and common mistakes.
 - Make flashcards concise and suitable for active recall.
 - Associate every flashcard and every question with exactly one generated topic.
 - Questions should test understanding, application, recognition, or recall,
-rather than merely copy sentences from the source.
+  rather than merely copying sentences from the source.
 - Include a mixture of easy, medium, and hard questions.
 - Every question must have exactly four distinct answer options.
 - Exactly one answer option must be correct.
 - Incorrect options should be plausible enough to require actual knowledge,
-but must still be clearly wrong.
+  but must still be clearly wrong.
 - The "answer" field must be copied character-for-character from the correct
-option, including any [[native script|romanization]] formatting.
-- Options are shown in random order. Never use options such as "All of the
-above", "None of the above", or "Both A and B", and never refer to an option
-by its letter or position.
+  option, including any [[native script|romanization]] formatting.
+- Options are shown in random order.
+- Never use options such as "All of the above", "None of the above",
+  or "Both A and B".
+- Never refer to an option by its letter or position.
 - Do not prefix options with letters or numbers.
 
-GENERAL FORMATTING RULES
+GENERAL QUOTATION RULES
 
-- Put ordinary literal terms, vocabulary words, phrases, symbols, commands,
-or expressions in quotation marks when they are being explicitly discussed.
-- Examples:
-- What does "photosynthesis" refer to?
-- What does the command "git status" do?
-- For languages that use a non-Latin writing system, the special language
-formatting rules below take priority over ordinary quotation formatting.
+These rules apply only when the special language-learning rules below do not
+override them.
+
+- Put an isolated literal term, vocabulary item, symbol, command, or short
+  expression in quotation marks when it is being explicitly discussed.
+
+Correct:
+What does "photosynthesis" refer to?
+
+Correct:
+What does the command "git status" do?
+
+- Treat a multi-word phrase or full example sentence as ONE unit.
+- Do not put quotation marks around every individual word in a phrase or sentence.
+
+Correct:
+What does "watashi wa Anna desu" mean?
+
+Incorrect:
+What does "watashi" "wa" "Anna" "desu" mean?
+
+- If a full phrase or sentence is quoted, use one pair of quotation marks around
+  the whole phrase or sentence.
+
+Correct:
+In the sentence "the cat sat on the mat", what is the subject?
+
+Incorrect:
+In the sentence "the" "cat" "sat" "on" "the" "mat", what is the subject?
 
 LANGUAGE LEARNING FORMATTING - REQUIRED
 
-When the material teaches, explains, or discusses a language whose normal
-writing system is non-Latin:
+These rules take priority over all general quotation rules.
+
+When the material teaches, explains, or discusses a language whose normal writing
+system is non-Latin:
 
 1. Preserve the actual target-language vocabulary and expressions.
-Do not replace relevant target-language words or phrases with only an
-English translation.
+   Do not replace relevant target-language words or phrases with only an
+   English translation.
 
 2. Every target-language word or phrase that has a standard romanization
-MUST be written using exactly this syntax:
+   MUST be written using exactly this syntax:
 
-[[native script|romanization]]
+   [[native script|romanization]]
 
 3. The romanization is the main readable text shown to the learner.
-The native script is the annotation that will be displayed above it.
+   The native script is the annotation that will be displayed above it.
 
 4. Never output:
-- native script by itself when a standard romanization exists
-- romanization by itself when the native script is known
-- an English translation as a replacement for the target-language
-expression when that expression itself is relevant
+   - native script by itself when a standard romanization exists
+   - romanization by itself when the native script is known
+   - an English translation as a replacement for the target-language expression
+     when that expression itself is relevant
 
 5. English translations may be used to explain meaning, but they must not
-replace the target-language expression being taught or discussed.
+   replace the target-language expression being taught or discussed.
 
 6. Apply the [[native script|romanization]] syntax everywhere target-language
-text appears, including:
-- flashcard fronts
-- flashcard backs
-- practice questions
-- multiple-choice answer options
-- example sentences
+   text appears, including:
+   - flashcard fronts
+   - flashcard backs
+   - practice questions
+   - multiple-choice answer options
+   - example phrases
+   - example sentences
+   - grammar explanations
 
 7. When an entire example sentence is in the target language, annotate every
-target-language word or meaningful unit that should be readable to a learner.
+   target-language word or meaningful unit that should be readable to a learner.
 
-8. Never leave bare target-language romanization inside:
-- quotation marks
-- parentheses
-- example sentences
-- grammar explanations
-- answer options
+Correct:
+[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]
 
-9. Never leave bare native script when a standard romanization is available.
+Incorrect:
+"watashi" "wa" "Anna" "desu"
 
-10. Never put quotation marks around [[native script|romanization]]
-expressions or around sentences made of them. The app already displays
-them in quotes.
+Incorrect:
+"watashi wa Anna desu"
 
-11. Before returning the generated study material, inspect every
-target-language word or phrase.
-If it can be represented as [[native script|romanization]], it MUST use
-that format.
+Incorrect:
+私 は アンナ です
+
+8. Never put quotation marks around:
+   - a [[native script|romanization]] expression
+   - a sequence of [[native script|romanization]] expressions
+   - a full sentence written using [[native script|romanization]]
+
+Correct:
+What does [[です|desu]] mean?
+
+Incorrect:
+What does "[[です|desu]]" mean?
+
+Correct:
+What is the role of [[は|wa]] in
+[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]?
+
+Incorrect:
+What is the role of "[[は|wa]]" in
+"[[私|watashi]]" "[[は|wa]]" "[[アンナ|Anna]]" "[[です|desu]]"?
+
+9. Never split a sentence into individually quoted romanized words.
+
+Incorrect:
+"watashi" "wa" "Anna" "desu"
+
+Incorrect:
+"watashi" は "Anna" "desu"
+
+Incorrect:
+"wa"は
+
+If native script and romanization are known, the only acceptable representation is:
+
+[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]
+
+10. Never combine bare romanization and native script into malformed forms.
+
+Incorrect:
+"wa"は
+
+Incorrect:
+wa は
+
+Incorrect:
+"desu"です
+
+Correct:
+[[は|wa]]
+
+Correct:
+[[です|desu]]
+
+11. Never leave bare target-language romanization inside:
+   - quotation marks
+   - parentheses
+   - example sentences
+   - grammar explanations
+   - answer options
+
+12. Never leave bare native script when a standard romanization is available.
+
+13. Before returning the generated study material, inspect every target-language
+   word, phrase, and sentence.
+
+   If it can be represented as [[native script|romanization]], it MUST use that
+   format unless the pronunciation-testing or writing-testing exception below
+   applies.
 
 LANGUAGE FORMATTING EXAMPLES
 
@@ -153,31 +241,76 @@ What does [[です|desu]] mean?
 Incorrect:
 What is the role of "wa" in "watashi wa Anna desu"?
 
+Incorrect:
+What is the role of "wa"は in "watashi" "wa" "Anna" "desu"?
+
 Correct:
 What is the role of [[は|wa]] in
 [[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]?
 
 Incorrect:
 Which word means "cat"?
-Options: neko, inu, tori, sakana
+Options:
+neko
+inu
+tori
+sakana
 
 Correct:
 Which word means "cat"?
-Options: [[猫|neko]], [[犬|inu]], [[鳥|tori]], [[魚|sakana]]
+Options:
+[[猫|neko]]
+[[犬|inu]]
+[[鳥|tori]]
+[[魚|sakana]]
 
 IMPORTANT LANGUAGE QUESTION RULE
 
-Do not accidentally reveal the answer. Because [[native script|romanization]]
-shows both forms together, do not use it where one of the forms is what is
-being tested. This rule takes priority over rules 4 and 9.
+Do not accidentally reveal the answer.
+
+Because [[native script|romanization]] displays both forms together, do not use
+it where one of those forms is specifically what the learner is being tested on.
+
+This exception takes priority over rules requiring
+[[native script|romanization]] formatting.
 
 - If a question or flashcard front asks for the pronunciation or romanization
-of a term, show only its native script, in quotation marks.
-- If it asks how a term is written, show only its romanization in the
-question, and use only native script in the answer options.
+  of a term, show only its native script, in quotation marks.
 
-Bad:
-How is [[は|wa]] pronounced when used as the topic particle?
-
-Better:
+Correct:
 Which pronunciation is used for "は" when it functions as the topic particle?
+
+Incorrect:
+Which pronunciation is used for [[は|wa]] when it functions as the topic particle?
+
+- If a question asks how a romanized term is written, show only the romanization
+  in the question, and use only native script in the answer options.
+
+Correct:
+Which writing represents "neko"?
+Options:
+猫
+犬
+鳥
+魚
+
+Incorrect:
+Which writing represents [[猫|neko]]?
+
+FINAL VALIDATION
+
+Before returning the output, verify all of the following:
+
+- Each topic has exactly 10 flashcards.
+- Each topic has exactly 20 multiple-choice questions.
+- Every multiple-choice question has exactly four distinct options.
+- Every question has exactly one correct answer.
+- The "answer" field exactly matches the correct option.
+- No duplicate or near-duplicate questions are present.
+- Topics are ordered from prerequisite concepts to more advanced concepts.
+- No target-language sentence has each word wrapped in separate quotation marks.
+- No malformed combinations such as "wa"は or "desu"です appear.
+- Every target-language term uses [[native script|romanization]] unless doing so
+  would reveal the answer to a pronunciation or writing question.
+- Full target-language example sentences are written as sequences of
+  [[native script|romanization]] units with no surrounding quotation marks.
