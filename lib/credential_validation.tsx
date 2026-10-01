@@ -18,7 +18,7 @@ export function validateEmail(email: string) {
     if (email.length > 320) {
         return "Email length cannot exceed 320 characters."
     }
-    else if (!email.includes("@") && email.length > 0) {
+    else if (email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         return "Enter a valid email."
     }
     else {
