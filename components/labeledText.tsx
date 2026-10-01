@@ -16,7 +16,7 @@ export default function LabeledText({ text }: { text: string }) {
 
         parts.push(
             <ruby key={match.index}>
-                {`"${romanization}"`}
+                {romanization}
                 <rt className="text-sm">
                     {nativeText}
                 </rt>
