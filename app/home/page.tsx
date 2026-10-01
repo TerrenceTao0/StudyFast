@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import ProgressBar from "@/components/progressBar"
 import ConfirmationPrompt from "@/components/confirmationPrompt"
 import NoticePrompt from "@/components/noticePrompt"
+import { formatFileSize } from "@/lib/file_size"
 
 //
 
@@ -121,9 +122,7 @@ function Document({
                     {ready && <ProgressBar progress={document.mastery} />}
 
                     <span className="text-xs text-accent">
-                        {Math.round(
-                            document.size_bytes / 1024 / 1024 * 10
-                        ) / 10} MB
+                        {formatFileSize(document.size_bytes)}
                     </span>
                 </div>
             </button>
