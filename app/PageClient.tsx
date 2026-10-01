@@ -2,10 +2,11 @@
 
 import Link from "next/link"
 import Title from "@/components/title"
+
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { validatePassword, validateEmail } from "@/lib/credential_validation"
-
+ 
 //
 
 export default function LandingPage() {

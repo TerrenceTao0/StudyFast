@@ -13,6 +13,9 @@ const nunito = Nunito({
 
 export const metadata: Metadata = {
   title: "StudyFast",
+  icons: {
+    icon: "/logo.png"
+  }
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
