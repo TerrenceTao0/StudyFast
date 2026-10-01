@@ -2,12 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
-from pydantic import BaseModel
-from typing import Literal
-
 from database import get_db
 from datetime import datetime, timezone
 from models import Topic, Document, User, Flashcard, FlashcardProgress, TopicMastery
+from schemas import ReviewRequest
 from routers.auth import get_current_user
 from fsrs import Scheduler, Card, Rating, State
 
@@ -19,9 +17,6 @@ router = APIRouter(
 )
 
 scheduler = Scheduler()
-
-class ReviewRequest(BaseModel):
-    response: Literal["again", "good"]
 
 ##
 

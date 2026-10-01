@@ -2,13 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from pydantic import BaseModel
 from datetime import datetime, timezone, timedelta, date
 
-import random 
+import random
 
 from database import get_db
 from models import User, Topic, Question, Document, TopicMastery, QuestionSession
+from schemas import UserAnswer
 from routers.auth import get_current_user
 
 ##
@@ -17,9 +17,6 @@ router = APIRouter(
     prefix="/questions",
     tags=["questions"]
 )
-
-class UserAnswer(BaseModel):
-    user_answer: str
 
 ##
 

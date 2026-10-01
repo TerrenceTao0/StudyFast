@@ -1,7 +1,10 @@
 export function validatePassword(password: string) {
-    if (password.length > 128) {
+    if (/\s/.test(password)) {
+        return "Password cannot contain spaces."
+    }
+    else if (password.length > 128) {
         return "Password cannot be longer than 128 characters."
-    } 
+    }
     else if (password.length >= 5) {
         return ""
     }

@@ -44,6 +44,16 @@ describe('credential_validation.validatePassword', () => {
     })
 
 
+    it("Password cannot contain whitespace.", () => {
+        const inputs = [" hello123", "hello123 ", "hello 123", "hello\t123"]
+
+        for (const input of inputs) {
+            const response = validatePassword(input)
+            expect(response).toBe("Password cannot contain spaces.")
+        }
+    })
+
+
     it("Valid password should pass", () => {
         const input = "327948m5h6b3456nmh8"
         const response = validatePassword(input)
