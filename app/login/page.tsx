@@ -153,9 +153,9 @@ export default function Home() {
               <div className="flex-1 border-t border-border" />
             </div>
 
-            <Link href="/api/auth/google/login" type="button" className="btn btn-ghost w-full">
+            <a href="/api/auth/google/login" type="button" className="btn btn-ghost w-full">
               Continue with Google
-            </Link>
+            </a>
 
             <p className="text-sm text-center text-accent mt-2">
               Don&apos;t have an account?{" "}
