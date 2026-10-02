@@ -123,12 +123,6 @@ class Document(Base):
         nullable=False
     )
 
-    stored_filename: Mapped[str] = mapped_column(
-        String(255),
-        nullable=False,
-        unique=True
-    )
-
     size_bytes: Mapped[int] = mapped_column(
         BigInteger,
         nullable=False
@@ -138,7 +132,10 @@ class Document(Base):
     # Extracted at upload so the worker doesn't need access to the uploaded file.
     text: Mapped[str] = mapped_column(
         Text,
-        nullable=False
+        nullable=False,
+
+        # Deferred because text can reach 1M characters.
+        deferred=True
     )
 
     uploaded_at: Mapped[datetime] = mapped_column(

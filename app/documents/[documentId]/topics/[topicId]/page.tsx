@@ -13,7 +13,7 @@ import QuestionTask, { type QuestionData, type QuestionResponse } from "@/compon
 
 type Data = {
     completion: number, 
-    soonest_due: string
+    seconds_left: number
 }
 
 //
@@ -121,9 +121,11 @@ export default function Topic() {
         }
 
 
+        // Deadline is built from the browser's own clock so a server/browser clock difference can't end the break early.
+        const due = Date.now() + breakData.seconds_left * 1000
+
         function calcBreakTime() {
             const now = Date.now()
-            const due = new Date(breakData!.soonest_due).getTime()
             const timeLeft = Math.round((due - now) / 1000)
             
             if (timeLeft < 0) {

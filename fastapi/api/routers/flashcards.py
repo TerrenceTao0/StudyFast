@@ -163,7 +163,7 @@ def get_flashcard(
     return {
         "state": "break",
         "completion": completion,
-        "soonest_due": soonest_due
+        "seconds_left": (soonest_due - now).total_seconds()
     } 
 
 

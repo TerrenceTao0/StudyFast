@@ -200,7 +200,6 @@ def upload(
     document = Document(
         user_id=current_user.id,
         original_filename=file.filename,
-        stored_filename=stored_filename,
         size_bytes=size,
         text=text
     )

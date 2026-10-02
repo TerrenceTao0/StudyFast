@@ -23,7 +23,7 @@ router = APIRouter(
 def construct_question_set(questions):
     cleaned_questions = []
     
-    for question in questions():
+    for question in questions:
         options = random.sample(question.options, k=len(question.options))
 
         cleaned_questions.append(
@@ -264,45 +264,35 @@ def answer_question(
     finished = session.current_question_index >= len(question_ids)
     correct = user_answer.user_answer == question.answer
 
-    mastery_record = db.scalar(
-        select(TopicMastery)
-        .where(
-            TopicMastery.user_id == current_user.id,
-            TopicMastery.topic_id == question.topic_id
-        )
-    )
+    mastery = topic_mastery.mastery
 
-    
-    if (mastery_record):
-        mastery = mastery_record.mastery
-
-        if (correct):
-            # Increase mastery by 4% and unlock next topic if mastery reaches 15% or more. 
-            next_topic_mastery = db.scalar(
-                select(TopicMastery)
-                .join(Topic)
-                .where(
-                    TopicMastery.user_id == current_user.id,
-                    Topic.document_id == topic_mastery.topic.document_id,
-                    Topic.order_index == topic_mastery.topic.order_index + 1
-                )
+    if (correct):
+        # Increase mastery by 4% and unlock next topic if mastery reaches 15% or more.
+        next_topic_mastery = db.scalar(
+            select(TopicMastery)
+            .join(Topic)
+            .where(
+                TopicMastery.user_id == current_user.id,
+                Topic.document_id == topic_mastery.topic.document_id,
+                Topic.order_index == topic_mastery.topic.order_index + 1
             )
+        )
 
 
-            if (next_topic_mastery and mastery + 4 >= 15):
-                next_topic_mastery.status = "unlocked"
+        if (next_topic_mastery and mastery + 4 >= 15):
+            next_topic_mastery.status = "unlocked"
 
 
-            mastery_record.mastery = min(
-                mastery + 4,
-                100
-            ) 
+        topic_mastery.mastery = min(
+            mastery + 4,
+            100
+        )
 
-        else:
-            mastery_record.mastery = max(
-                mastery - 2,
-                0
-            ) 
+    else:
+        topic_mastery.mastery = max(
+            mastery - 2,
+            0
+        )
 
 
     db.commit()
