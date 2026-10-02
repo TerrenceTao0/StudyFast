@@ -2,7 +2,6 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from database import Base, engine
 from routers import auth, documents, flashcards, questions
 
 ##
@@ -45,9 +44,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-# Create missing SQLAlchemy model tables.
-Base.metadata.create_all(bind=engine)
 
 app.include_router(auth.router)
 app.include_router(documents.router)
