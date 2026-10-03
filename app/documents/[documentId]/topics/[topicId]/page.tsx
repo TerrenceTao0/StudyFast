@@ -291,7 +291,7 @@ export default function Topic() {
                     setState("questions")
                 }
             }
-            else if (response.status == 403) {
+            else if (response.status == 403 || response.status == 409) {
                 router.replace(`/documents/${documentId}/topics`)
             }
         }

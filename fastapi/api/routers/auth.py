@@ -88,19 +88,44 @@ def google_callback(
         return RedirectResponse(f"{APP_URL}/login")
 
 
-    user = db.scalar(select(User).where(User.google_sub == profile["sub"]))
+    # Check if user logged in via OAUTH before.
+    user = db.scalar(
+        select(User)
+        .where(User.google_sub == profile["sub"])
+    )
 
+
+    # User hasn't logged in via OAuth before so we need to create an account or link their existing account to Google.
     if (user is None):
         email = profile["email"].lower()
-        user = db.scalar(select(User).where(User.email == email))
+        user = db.scalar(
+            select(User)
+            .where(User.email == email)
+        )
 
         if (user is None):
-            user = User(email=email, google_sub=profile["sub"])
+            user = User(
+                email=email,
+                email_verified=True,
+                google_sub=profile["sub"]
+            )
+
             db.add(user)
 
         else:
-            # Existing password account.
+            # Account is already linked to a different Google account.
+            if (user.google_sub is not None):
+                return RedirectResponse(f"{APP_URL}/login")
+
+            
+            # Existing password-created account.
             user.google_sub = profile["sub"]
+
+
+            # Someone tried to create an account with the same email but they didn't verify it. Wipe the password and verify the email.
+            if (not user.email_verified):
+                user.password_hash = None
+                user.email_verified = True
 
 
         db.commit()

@@ -47,6 +47,13 @@ def get_flashcard(
         )
 
 
+    if (topic.content_status != "ready"):
+        raise HTTPException(
+            status_code=409,
+            detail="Topic has not been generated."
+        )
+
+
     if (not topic.flashcards):
         return {
             "state": "complete"

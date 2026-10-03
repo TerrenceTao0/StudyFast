@@ -5,6 +5,7 @@ import { useParams } from "next/navigation"
 import Link from "next/link"
 
 import ProgressBar from "@/components/progressBar"
+import NoticePrompt from "@/components/noticePrompt"
 import { getDocument } from "@/lib/document"
 
 //
@@ -15,6 +16,7 @@ type TopicData = {
     order_index: number
     mastery: number
     status: string
+    content_status: string
 }
 
 
@@ -37,18 +39,21 @@ function Topic({
     topic,
     index,
     isLast,
-    documentId
+    documentId,
+    onGenerate
 }: {
     topic: TopicData,
     index: number,
     isLast: boolean,
-    documentId: string
+    documentId: string,
+    onGenerate: () => void
 }) {
     const currentX = positions[index % positions.length]
     const nextX = positions[(index + 1) % positions.length]
 
     const differenceX = nextX - currentX
     const locked = topic.status == "locked"
+    const generating = topic.content_status == "pending" || topic.content_status == "processing"
 
     return (
         <div
@@ -82,10 +87,26 @@ function Topic({
                     <p className="font-bold">
                         {topic.name}
                     </p>
+                </div>
+            ) : topic.content_status != "ready" ? (
+                <div className="
+                    card h-28 px-3 flex flex-col gap-2 justify-center items-center text-center z-2
+                    border-2 border-primary/30
+                ">
+                    <p className="font-bold line-clamp-2">
+                        {topic.name}
+                    </p>
 
-                    <span className="text-xs mt-1">
-                        Complete the previous topic
-                    </span>
+                    {generating ? (
+                        <span className="flex items-center gap-2 text-accent text-xs font-bold">
+                            <span className="w-4 h-4 border-2 border-border border-t-primary rounded-full animate-spin" />
+                            Generating...
+                        </span>
+                    ) : (
+                        <button onClick={onGenerate} className="btn btn-primary h-8 px-4 text-xs">
+                            {topic.content_status == "failed" ? "Try again" : "Generate"}
+                        </button>
+                    )}
                 </div>
             ) : (
                 <Link
@@ -110,19 +131,73 @@ export default function Home() {
     const documentId = params.documentId as string
 
     const [document, setDocument] = useState<DocumentData>()
+    const [error, setError] = useState("")
 
     useEffect(() => {
-        async function get() {
-            const data = await getDocument(documentId)
+        loadDocument()
+    }, [documentId])
 
-            if (data) {
-                setDocument(data)
-            }
+
+    // Poll every second while topics are generating so they open up without a page refresh.
+    useEffect(() => {
+        const generating = document?.topics.some(
+            (topic) =>
+                topic.content_status == "pending" ||
+                topic.content_status == "processing"
+        )
+
+
+        if (!generating) {
+            return
         }
 
 
-        get()
-    }, [documentId])
+        const timeout = setTimeout(() => {
+            loadDocument()
+        }, 1000)
+
+
+        return () => clearTimeout(timeout)
+
+    }, [document])
+
+
+    async function loadDocument() {
+        const data = await getDocument(documentId)
+
+        if (data) {
+            setDocument(data)
+        }
+    }
+
+
+    async function generateTopic(topicId: number) {
+        try {
+            const response = await fetch(
+                `/api/documents/${documentId}/topics/${topicId}/generate`,
+                {
+                    method: "POST",
+                    credentials: "include"
+                }
+            )
+
+
+            if (!response.ok) {
+                const json = await response.json().catch(() => ({}))
+                setError(json.detail ?? "Generation failed.")
+
+                return
+            }
+        }
+        catch {
+            setError("Generation failed.")
+
+            return
+        }
+
+
+        loadDocument()
+    }
 
 
     return (
@@ -154,10 +229,18 @@ export default function Home() {
                                 index={index}
                                 isLast={index==document.topics.length-1}
                                 documentId={documentId}
+                                onGenerate={() => generateTopic(topic.id)}
                             />
                         ))}
                     </div>
                 </div>
+            )}
+
+            {error && (
+                <NoticePrompt
+                    message={error}
+                    onOkay={() => setError("")}
+                />
             )}
         </>
     )

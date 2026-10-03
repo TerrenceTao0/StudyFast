@@ -1,6 +1,6 @@
 from pathlib import Path
 import re
-import json 
+import json
 
 from pypdf import PdfReader
 from docx import Document as DocxDocument
@@ -15,7 +15,138 @@ client = OpenAI()
 # Characters (not tokens) kept per document; the model never sees more, so storing more is waste.
 MAX_TEXT_LENGTH = 1_000_000
 
+# Characters per numbered section (about a page), so each topic only stores and sends the sections it needs.
+SECTION_LENGTH = 3000
+
 content_generation_prompt = open(Path(__file__).resolve().parent.parent / "prompts" / "content_generation.txt", "r", encoding="utf-8",).read()
+
+OUTLINE_TASK = """Generate only the course title and the ordered list of topics.
+The material is split into numbered sections. For each topic, list the id of every
+section containing material needed to teach it, including definitions or examples
+it builds on. A section can belong to more than one topic.
+The flashcards and questions for each topic are generated separately, from only its sections."""
+
+TOPIC_TASK = """Generate the flashcards and multiple-choice questions for this one topic only:
+{topic}
+
+The material above is only the part of the document relevant to this topic.
+
+The full course outline, for context:
+{outline}
+
+The other topics are generated separately, so only cover this topic and do not
+test the content of other topics except where this topic builds on it."""
+
+OUTLINE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "title": {
+            "type": "string",
+            "maxLength": 100
+        },
+        "topics": {
+            "type": "array",
+            "minItems": 5,
+            "maxItems": 20,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "sections": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "required": [
+                    "name",
+                    "sections"
+                ],
+                "additionalProperties": False
+            }
+        }
+    },
+    "required": [
+        "title",
+        "topics"
+    ],
+    "additionalProperties": False
+}
+
+TOPIC_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "flashcards": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "front": {
+                        "type": "string"
+                    },
+                    "back": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "front",
+                    "back"
+                ],
+                "additionalProperties": False
+            },
+            "minItems": 10,
+            "maxItems": 10
+        },
+        "question_bank": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "question": {
+                        "type": "string"
+                    },
+                    "options": {
+                        "type": "array",
+                        "minItems": 4,
+                        "maxItems": 4,
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "answer": {
+                        "type": "string"
+                    },
+                    "difficulty": {
+                        "type": "string",
+                        "enum": [
+                            "easy",
+                            "medium",
+                            "hard"
+                        ]
+                    }
+                },
+                "required": [
+                    "question",
+                    "options",
+                    "answer",
+                    "difficulty"
+                ],
+                "additionalProperties": False
+            },
+            "minItems": 20,
+            "maxItems": 20
+        }
+    },
+    "required": [
+        "flashcards",
+        "question_bank"
+    ],
+    "additionalProperties": False
+}
 
 ##
 
@@ -109,123 +240,102 @@ def extract_text(file_path: Path) -> str:
     return clean_text(text)[:MAX_TEXT_LENGTH]
 
 
-def analyze(text: str) -> dict: 
-    if (not text.strip()):
-        raise ValueError("No text found.")
+def split_into_sections(text: str) -> list[str]:
+    sections = []
+    current = ""
+
+    # Split between lines so no line is cut in half.
+    for line in text.splitlines(keepends=True):
+        if (current and len(current) + len(line) > SECTION_LENGTH):
+            sections.append(current)
+            current = ""
 
 
+        current += line
+
+
+    if (current):
+        sections.append(current)
+
+
+    return sections
+
+
+def generate(material: str, task: str, schema_name: str, schema: dict) -> dict:
     response = client.responses.create(
         model="gpt-5.6-luna",
 
         instructions=content_generation_prompt,
 
-        # Also capped here for documents stored before the cap at upload existed.
-        input=text[:MAX_TEXT_LENGTH],
+        input=[
+            {
+                "role": "user",
+                "content": material
+            },
+            {
+                "role": "developer",
+                "content": task
+            }
+        ],
 
         text={
             "format": {
                 "type": "json_schema",
-                "name": "study_material",
+                "name": schema_name,
                 "strict": True,
-                "schema": {
-                    "type": "object",
-                    "properties": {
-                        "title": {
-                            "type": "string",
-                            "maxLength": 100
-                        },
-                        "topics": {
-                            "type": "array",
-                            "minItems": 5,
-                            "maxItems": 20,
-                            "items": {
-                                "type": "object",
-                                "properties": {
-                                    "name": {
-                                        "type": "string"
-                                    },
-                                    "flashcards": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "properties": {
-                                                "front": {
-                                                    "type": "string"
-                                                },
-                                                "back": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "front",
-                                                "back"
-                                            ],
-                                            "additionalProperties": False
-                                        },
-                                        "minItems": 10,
-                                        "maxItems": 10
-                                    },
-                                    "question_bank": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "properties": {
-                                                "question": {
-                                                    "type": "string"
-                                                },
-                                                "options": {
-                                                    "type": "array",
-                                                    "minItems": 4,
-                                                    "maxItems": 4,
-                                                    "items": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "answer": {
-                                                    "type": "string"
-                                                },
-                                                "difficulty": {
-                                                    "type": "string",
-                                                    "enum": [
-                                                        "easy",
-                                                        "medium",
-                                                        "hard"
-                                                    ]
-                                                }
-                                            },
-                                            "required": [
-                                                "question",
-                                                "options",
-                                                "answer",
-                                                "difficulty"
-                                            ],
-                                            "additionalProperties": False
-                                        },
-                                        "minItems": 20,
-                                        "maxItems": 20
-                                    }
-                                },
-                                "required": [
-                                    "name",
-                                    "flashcards",
-                                    "question_bank"
-                                ],
-                                "additionalProperties": False
-                            }
-                        }
-                    },
-                    "required": [
-                        "title",
-                        "topics"
-                    ],
-                    "additionalProperties": False
-                }
+                "schema": schema
             }
         }
     )
 
 
-    result = json.loads(response.output_text)
+    return json.loads(response.output_text)
 
-    return result 
+
+def generate_outline(text: str) -> dict:
+    if (not text.strip()):
+        raise ValueError("No text found.")
+
+
+    # Also capped here for documents stored before the cap at upload existed.
+    text = text[:MAX_TEXT_LENGTH]
+    sections = split_into_sections(text)
+
+    numbered_material = "\n\n".join(
+        f'<section id="{i}">\n{section.strip()}\n</section>'
+        for i, section in enumerate(sections, start=1)
+    )
+
+    outline = generate(numbered_material, OUTLINE_TASK, "course_outline", OUTLINE_SCHEMA)
+    topics = []
+
+    for topic in outline["topics"]:
+        # Ignore section ids that don't exist, and fall back to the whole text if none are left.
+        ids = sorted({
+            i
+            for i in topic["sections"]
+            if 1 <= i <= len(sections)
+        })
+
+        material = "\n".join(sections[i - 1] for i in ids) if ids else text
+
+        topics.append({
+            "name": topic["name"],
+            "material": material
+        })
+
+
+    return {
+        "title": outline["title"],
+        "topics": topics
+    }
+
+
+def generate_topic(material: str, topic: str, outline: str) -> dict:
+    task = TOPIC_TASK.format(
+        topic=topic,
+        outline=outline
+    )
+
+    return generate(material, task, "topic_content", TOPIC_SCHEMA)
 

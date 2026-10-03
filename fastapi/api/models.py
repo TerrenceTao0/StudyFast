@@ -21,6 +21,11 @@ class User(Base):
         nullable=False
     )
 
+    email_verified: Mapped[bool] = mapped_column(
+        server_default="false",
+        nullable=False
+    )
+
     password_hash: Mapped[str | None] = mapped_column(
         String(128),
 
@@ -165,10 +170,12 @@ class Document(Base):
 
 
     # Document -< Many Topic
+    # Ordered explicitly, as Postgres returns an updated row last without an ORDER BY.
     topics: Mapped[list["Topic"]] = relationship(
         back_populates="document",
-        cascade="all, delete-orphan"
-    ) 
+        cascade="all, delete-orphan",
+        order_by="Topic.order_index"
+    )
 
 
 class Topic(Base):
@@ -190,6 +197,22 @@ class Topic(Base):
 
     order_index: Mapped[int] = mapped_column(
         nullable=False
+    )
+
+
+    # Statuses - empty, pending, processing, ready, failed
+    content_status: Mapped[str] = mapped_column(
+        String(20),
+        nullable=False,
+        default="empty"
+    )
+
+
+    # The sections of the document text this topic's content is generated from.
+    material: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
+        deferred=True
     )
 
     document: Mapped["Document"] = relationship(
