@@ -68,9 +68,6 @@ STUDY MATERIAL REQUIREMENTS
 
 GENERAL QUOTATION RULES
 
-These rules apply only when the special language-learning rules below do not
-override them.
-
 - Put an isolated literal term, vocabulary item, symbol, command, or short
   expression in quotation marks when it is being explicitly discussed.
 
@@ -84,10 +81,10 @@ What does the command "git status" do?
 - Do not put quotation marks around every individual word in a phrase or sentence.
 
 Correct:
-What does "watashi wa Anna desu" mean?
+What does "me llamo Anna" mean?
 
 Incorrect:
-What does "watashi" "wa" "Anna" "desu" mean?
+What does "me" "llamo" "Anna" mean?
 
 - If a full phrase or sentence is quoted, use one pair of quotation marks around
   the whole phrase or sentence.
@@ -100,161 +97,73 @@ In the sentence "the" "cat" "sat" "on" "the" "mat", what is the subject?
 
 LANGUAGE LEARNING FORMATTING - REQUIRED
 
-These rules take priority over all general quotation rules.
+These rules apply when the material teaches a language whose normal writing
+system is non-Latin, such as Japanese, Korean, Russian, Chinese, or Arabic.
 
-When the material teaches, explains, or discusses a language whose normal writing
-system is non-Latin:
-
-1. Preserve the actual target-language vocabulary and expressions.
-   Do not replace relevant target-language words or phrases with only an
-   English translation.
-
-2. Every target-language word or phrase that has a standard romanization
-   MUST be written using exactly this syntax:
+1. Write every target-language word as:
 
    [[native script|romanization]]
 
-3. The romanization is the main readable text shown to the learner.
-   The native script is the annotation that will be displayed above it.
-
-4. Never output:
-   - native script by itself when a standard romanization exists
-   - romanization by itself when the native script is known
-   - an English translation as a replacement for the target-language expression
-     when that expression itself is relevant
-
-5. English translations may be used to explain meaning, but they must not
-   replace the target-language expression being taught or discussed.
-
-6. Apply the [[native script|romanization]] syntax everywhere target-language
-   text appears, including:
-   - flashcard fronts
-   - flashcard backs
-   - practice questions
-   - multiple-choice answer options
-   - example phrases
-   - example sentences
-   - grammar explanations
-
-7. When an entire example sentence is in the target language, annotate every
-   target-language word or meaningful unit that should be readable to a learner.
+   The romanization is the main text shown to the learner. The native script
+   is displayed above it. Use one [[native script|romanization]] per word, with
+   spaces between them, and keep punctuation and quotation marks outside the
+   brackets.
 
 Correct:
 [[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]
 
-Incorrect:
-"watashi" "wa" "Anna" "desu"
+Correct:
+[[Меня|menya]] [[зовут|zovut]] [[Анна|Anna]]
 
 Incorrect:
-"watashi wa Anna desu"
+watashi wa Anna desu
 
 Incorrect:
 私 は アンナ です
 
-8. Never put quotation marks around:
-   - a [[native script|romanization]] expression
-   - a sequence of [[native script|romanization]] expressions
-   - a full sentence written using [[native script|romanization]]
-
-Correct:
-What does [[です|desu]] mean?
-
-Incorrect:
-What does "[[です|desu]]" mean?
-
-Correct:
-What is the role of [[は|wa]] in
-[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]?
-
-Incorrect:
-What is the role of "[[は|wa]]" in
-"[[私|watashi]]" "[[は|wa]]" "[[アンナ|Anna]]" "[[です|desu]]"?
-
-9. Never split a sentence into individually quoted romanized words.
-
-Incorrect:
-"watashi" "wa" "Anna" "desu"
-
-Incorrect:
-"watashi" は "Anna" "desu"
-
-Incorrect:
-"wa"は
-
-If native script and romanization are known, the only acceptable representation is:
-
-[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]
-
-10. Never combine bare romanization and native script into malformed forms.
-
-Incorrect:
-"wa"は
-
 Incorrect:
 wa は
 
-Incorrect:
-"desu"です
+2. Use this syntax everywhere target-language text appears in flashcards,
+   questions, and answer options. Keep the target-language expression that is
+   being taught: an English translation may explain it, but must not replace it.
+
+3. In a grammar pattern, the slots the learner fills in are not vocabulary.
+   Write each slot label in English, even when the material labels it in the
+   target language, or keep the material's own letter labels such as N1, A, or X.
+   Only the fixed words of the pattern use the syntax.
 
 Correct:
-[[は|wa]]
+noun [[は|wa]] noun [[です|desu]]
 
 Correct:
-[[です|desu]]
-
-11. Never leave bare target-language romanization inside:
-   - quotation marks
-   - parentheses
-   - example sentences
-   - grammar explanations
-   - answer options
-
-12. Never leave bare native script when a standard romanization is available.
-
-13. Before returning the generated study material, inspect every target-language
-   word, phrase, and sentence.
-
-   If it can be represented as [[native script|romanization]], it MUST use that
-   format unless the pronunciation-testing or writing-testing exception below
-   applies.
-
-LANGUAGE FORMATTING EXAMPLES
+N1 [[は|wa]] N2 [[です|desu]]
 
 Incorrect:
-Use the person's name plus "さん".
+[[名詞|meishi]] [[は|wa]] [[名詞|meishi]] [[です|desu]]
 
-Incorrect:
-Use the person's name plus "san".
+4. The quotation rules above also apply to target-language text. When it
+   appears inside an English sentence, put ONE pair of quotation marks around
+   the whole word, phrase, sentence, or pattern, so it is easy to tell apart
+   from the English. Never quote each word separately.
 
 Correct:
-Use the person's name plus [[さん|san]].
-
-Incorrect:
-What does "です" mean?
-
-Incorrect:
-What does "desu" mean?
+What does "[[감사합니다|gamsahamnida]]" mean?
 
 Correct:
-What does [[です|desu]] mean?
-
-Incorrect:
-What is the role of "wa" in "watashi wa Anna desu"?
-
-Incorrect:
-What is the role of "wa"は in "watashi" "wa" "Anna" "desu"?
+What does the pattern "noun [[は|wa]] noun [[です|desu]]" express?
 
 Correct:
-What is the role of [[は|wa]] in
-[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]?
+What does "[[は|wa]]" mark in "[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]"?
 
 Incorrect:
-Which word means "cat"?
-Options:
-neko
-inu
-tori
-sakana
+What does the pattern noun [[は|wa]] noun [[です|desu]] express?
+
+Incorrect:
+What does "[[は|wa]]" mark in "[[私|watashi]]" "[[は|wa]]" "[[アンナ|Anna]]" "[[です|desu]]"?
+
+   When target-language text stands alone, such as an answer option or a
+   flashcard side that contains nothing else, do not add quotation marks.
 
 Correct:
 Which word means "cat"?
@@ -264,99 +173,58 @@ Options:
 [[鳥|tori]]
 [[魚|sakana]]
 
-LANGUAGE QUOTATION RULES
+5. When a question tests how a word is read or how it is written, the full
+   syntax would reveal the answer. Show only the form the learner is given,
+   and make the options the form being asked for.
 
-These rules take priority over the general quotation rules.
+Correct (testing the reading):
+How is "猫" read?
+Options:
+neko
+inu
+tori
+sakana
 
-1. When an individual target-language word or short expression is the SUBJECT
-   being explicitly discussed, wrap the entire [[native script|romanization]]
-   expression in quotation marks.
+Correct (testing the writing):
+How is "spasibo" written?
+Options:
+спасибо
+пожалуйста
+привет
+здравствуйте
 
-Correct:
-What does "[[は|wa]]" mean?
-
-Correct:
-What role does "[[です|desu]]" play?
-
-Correct:
-What does "[[は|wa]]" mark in
-[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]?
-
-2. Quotation marks indicate that a specific term or expression is being
-   explicitly discussed. They do NOT belong automatically to every
-   [[native script|romanization]] expression.
-
-3. When a target-language word appears normally inside an example sentence,
-   do NOT put quotation marks around it.
-
-Correct:
-What does "[[は|wa]]" mark in
-[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]?
+   For the same reason, never ask a question that the romanization itself
+   answers.
 
 Incorrect:
-What does "[[は|wa]]" mark in
-"[[私|watashi]]" "[[は|wa]]" "[[アンナ|Anna]]" "[[です|desu]]"?
+Which word means "kanji"?
+Options:
+[[漢字|kanji]]
+[[ひらがな|hiragana]]
+[[カタカナ|katakana]]
+[[文字|moji]]
 
-4. A full example sentence written using [[native script|romanization]]
-   expressions should normally have NO quotation marks around the individual
-   words.
-
-Correct:
-[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]
-
-Incorrect:
-"[[私|watashi]]" "[[は|wa]]" "[[アンナ|Anna]]" "[[です|desu]]"
-
-5. Do not quote a word merely because it is target-language text.
-   Quote it only when that specific word or expression is being named,
-   defined, analyzed, contrasted, or explicitly asked about.
-
-Example:
+6. The title and topic names are displayed as plain text. Never use the
+   [[native script|romanization]] syntax in them. Write the romanization
+   followed by the native script in parentheses.
 
 Correct:
-What does "[[は|wa]]" mark in
-[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]?
-
-Here, the first "[[は|wa]]" is quoted because it is the term being discussed.
-The second [[は|wa]] is not quoted because it is simply part of the example
-sentence.
-
-6. Never produce malformed combinations such as:
+The topic particle wa (は)
 
 Incorrect:
-"wa"は
+The topic particle [[は|wa]]
 
 Incorrect:
-wa は
+The topic particle は
 
-Incorrect:
-"desu"です
+7. The learner never sees these instructions. Never mention the formatting,
+   the syntax, or the annotations in the generated content.
 
 Correct:
-"[[は|wa]]"
-
-Correct:
-"[[です|desu]]"
-
-7. If several target-language words form one phrase that is itself being
-   discussed as a single expression, place ONE pair of quotation marks around
-   the entire formatted phrase.
-
-Correct:
-What does "[[おはよう|ohayou]] [[ございます|gozaimasu]]" mean?
+Which word means "cat"?
 
 Incorrect:
-What does "[[おはよう|ohayou]]" "[[ございます|gozaimasu]]" mean?
-
-8. Example sentences used only as context should not be quoted word-by-word.
-
-Correct:
-What does "[[は|wa]]" mark in
-[[私|watashi]] [[は|wa]] [[アンナ|Anna]] [[です|desu]]?
-
-Incorrect:
-What does "[[は|wa]]" mark in
-"[[私|watashi]]" "[[は|wa]]" "[[アンナ|Anna]]" "[[です|desu]]"?
+Which formatted term means "cat"?
 
 FINAL VALIDATION
 
@@ -369,9 +237,13 @@ Before returning the output, verify all of the following:
 - The "answer" field exactly matches the correct option.
 - No duplicate or near-duplicate questions are present.
 - Topics are ordered from prerequisite concepts to more advanced concepts.
-- No target-language sentence has each word wrapped in separate quotation marks.
-- No malformed combinations such as "wa"は or "desu"です appear.
-- Every target-language term uses [[native script|romanization]] unless doing so
-  would reveal the answer to a pronunciation or writing question.
-- Full target-language example sentences are written as sequences of
-  [[native script|romanization]] units with no surrounding quotation marks.
+- Every target-language word uses [[native script|romanization]], unless the
+  question tests how it is read or written.
+- Target-language text inside an English sentence has one pair of quotation
+  marks around the whole word, phrase, sentence, or pattern, never around
+  each word.
+- Grammar pattern slots are written in English or as letter labels, not as
+  target-language words.
+- No question is answered by its own romanization.
+- The title and topic names do not use the [[native script|romanization]] syntax.
+- Nothing mentions the formatting or these instructions.
