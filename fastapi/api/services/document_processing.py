@@ -18,24 +18,11 @@ MAX_TEXT_LENGTH = 1_000_000
 # Characters per numbered section (about a page), so each topic only stores and sends the sections it needs.
 SECTION_LENGTH = 3000
 
-content_generation_prompt = open(Path(__file__).resolve().parent.parent / "prompts" / "content_generation.txt", "r", encoding="utf-8",).read()
+PROMPTS_PATH = Path(__file__).resolve().parent.parent / "prompts"
 
-OUTLINE_TASK = """Generate only the course title and the ordered list of topics.
-The material is split into numbered sections. For each topic, list the id of every
-section containing material needed to teach it, including definitions or examples
-it builds on. A section can belong to more than one topic.
-The flashcards and questions for each topic are generated separately, from only its sections."""
-
-TOPIC_TASK = """Generate the flashcards and multiple-choice questions for this one topic only:
-{topic}
-
-The material above is only the part of the document relevant to this topic.
-
-The full course outline, for context:
-{outline}
-
-The other topics are generated separately, so only cover this topic and do not
-test the content of other topics except where this topic builds on it."""
+content_generation_prompt = (PROMPTS_PATH / "content_generation.txt").read_text(encoding="utf-8")
+OUTLINE_TASK = (PROMPTS_PATH / "outline_task.txt").read_text(encoding="utf-8")
+TOPIC_TASK = (PROMPTS_PATH / "topic_task.txt").read_text(encoding="utf-8")
 
 OUTLINE_SCHEMA = {
     "type": "object",
@@ -317,7 +304,19 @@ def generate_outline(text: str) -> dict:
             if 1 <= i <= len(sections)
         })
 
-        material = "\n".join(sections[i - 1] for i in ids) if ids else text
+
+        if (ids):
+            selected_sections = []
+
+            for i in ids:
+                selected_sections.append(sections[i - 1])
+
+
+            material = "\n".join(selected_sections)
+
+        else:
+            material = text
+
 
         topics.append({
             "name": topic["name"],

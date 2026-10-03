@@ -1,0 +1,10 @@
+Generate the flashcards and multiple-choice questions for this one topic only:
+{topic}
+
+The material above is only the part of the document relevant to this topic.
+
+The full course outline, for context:
+{outline}
+
+The other topics are generated separately, so only cover this topic and do not
+test the content of other topics except where this topic builds on it.

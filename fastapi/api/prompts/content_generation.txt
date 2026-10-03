@@ -124,8 +124,8 @@ Incorrect:
 Incorrect:
 wa は
 
-2. Use this syntax everywhere target-language text appears in flashcards,
-   questions, and answer options. Keep the target-language expression that is
+2. Use this syntax everywhere target-language text appears in topic names,
+   flashcards, questions, and answer options. Keep the target-language expression that is
    being taught: an English translation may explain it, but must not replace it.
 
 3. In a grammar pattern, the slots the learner fills in are not vocabulary.
@@ -204,18 +204,25 @@ Options:
 [[カタカナ|katakana]]
 [[文字|moji]]
 
-6. The title and topic names are displayed as plain text. Never use the
-   [[native script|romanization]] syntax in them. Write the romanization
-   followed by the native script in parentheses.
+6. Topic names use the syntax, but never quotation marks around it.
 
 Correct:
-The topic particle wa (は)
+The topic particle [[は|wa]]
+
+Correct:
+[[て|te]]-form formation and polite requests
 
 Incorrect:
-The topic particle [[は|wa]]
+The topic particle "[[は|wa]]"
 
 Incorrect:
 The topic particle は
+
+   The title is displayed as plain text. Never use the syntax in it. Write
+   the romanization followed by the native script in parentheses.
+
+Correct:
+Japanese particles: wa (は) and ga (が)
 
 7. The learner never sees these instructions. Never mention the formatting,
    the syntax, or the annotations in the generated content.
@@ -245,5 +252,6 @@ Before returning the output, verify all of the following:
 - Grammar pattern slots are written in English or as letter labels, not as
   target-language words.
 - No question is answered by its own romanization.
-- The title and topic names do not use the [[native script|romanization]] syntax.
+- Topic names use [[native script|romanization]] with no quotation marks.
+- The title does not use the [[native script|romanization]] syntax.
 - Nothing mentions the formatting or these instructions.

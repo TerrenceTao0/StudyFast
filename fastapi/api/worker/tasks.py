@@ -69,6 +69,7 @@ def process_document(document_id: int):
         document.status = "ready"
         document.title = ai_response["title"]
 
+
         # Commit all generated study material together. 
         # If construction fails before this commit, no partially generated material is saved.
         # Status will also become "pending" so that processing can try again.

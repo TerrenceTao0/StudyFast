@@ -6,6 +6,7 @@ import Link from "next/link"
 
 import ProgressBar from "@/components/progressBar"
 import NoticePrompt from "@/components/noticePrompt"
+import LabeledText from "@/components/labeledText"
 import { getDocument } from "@/lib/document"
 
 //
@@ -65,7 +66,7 @@ function Topic({
             {!isLast && (
                 <div
                     className={`
-                        absolute top-20 left-1/2 w-1.5 h-48 rounded-full origin-top
+                        absolute top-[calc(100%-3.5rem)] left-1/2 w-1.5 h-48 rounded-full origin-top
                         ${locked ? "bg-border" : "bg-primary/40"}
                     `}
                     style={{
@@ -81,20 +82,20 @@ function Topic({
 
             {locked ? (
                 <div className="
-                    h-28 rounded-2xl bg-background border-2 border-dashed border-border text-accent/70
+                    min-h-28 py-2 rounded-2xl bg-background border-2 border-dashed border-border text-accent/70
                     flex flex-col justify-center items-center text-center px-3 select-none z-2
                 ">
                     <p className="font-bold">
-                        {topic.name}
+                        <LabeledText text={topic.name} />
                     </p>
                 </div>
             ) : topic.content_status != "ready" ? (
                 <div className="
-                    card h-28 px-3 flex flex-col gap-2 justify-center items-center text-center z-2
+                    card min-h-28 px-3 py-2 flex flex-col gap-2 justify-center items-center text-center z-2
                     border-2 border-primary/30
                 ">
-                    <p className="font-bold line-clamp-2">
-                        {topic.name}
+                    <p className="font-bold">
+                        <LabeledText text={topic.name} />
                     </p>
 
                     {generating ? (
@@ -112,12 +113,12 @@ function Topic({
                 <Link
                     href={`/documents/${documentId}/topics/${topic.id}`}
                     className="
-                        card h-28 px-3 flex justify-center items-center text-center font-bold z-2
+                        card min-h-28 px-3 py-2 flex justify-center items-center text-center font-bold z-2
                         border-2 border-primary/30 transition-all
                         hover:-translate-y-1 hover:shadow-lg hover:border-primary hover:text-primary
                     "
                 >
-                    {topic.name}
+                    <LabeledText text={topic.name} />
                 </Link>
             )}
         </div>
