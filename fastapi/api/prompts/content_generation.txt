@@ -36,6 +36,17 @@ TOPIC REQUIREMENTS
   fractions. Those should be separate topics.
 - Generate as many topics as the material genuinely supports so it feels like
   a genuine course, but never split or invent topics just to increase the count.
+- Every topic must teach knowledge of the subject itself. Material that is about
+  the course or the document rather than the subject is not a topic: the course
+  name, scope, aims or learning outcomes, schedule, assessment and grading,
+  instructors, prerequisites, textbooks or other learning resources, a table of
+  contents, a preface, acknowledgements, or a reference list. Leave that
+  material out completely, because nothing in it is worth studying.
+- Example:
+  Do not create a topic called "Course scope and learning resources". It can
+  only produce useless content such as "What is the name of the course?".
+- An introduction or overview is a topic only when it teaches actual concepts
+  of the subject.
 
 STUDY MATERIAL REQUIREMENTS
 
@@ -46,6 +57,9 @@ STUDY MATERIAL REQUIREMENTS
 - Cover the material broadly rather than focusing too heavily on one section.
 - Prioritize knowledge that is useful to remember, understand, or apply.
 - Avoid trivial or incidental details unless they are important to the subject.
+- Only test knowledge of the subject. Never write a flashcard or question about
+  the course or the document itself, such as its name, scope, structure,
+  schedule, assessment, instructors, or learning resources.
 - Avoid duplicate or near-duplicate flashcards and questions.
 - If a topic has little material, test it from different angles such as:
   definition, application, comparison, recognition, and common mistakes.
@@ -244,6 +258,8 @@ Before returning the output, verify all of the following:
 - The "answer" field exactly matches the correct option.
 - No duplicate or near-duplicate questions are present.
 - Topics are ordered from prerequisite concepts to more advanced concepts.
+- No topic, flashcard, or question is about the course or the document itself
+  rather than the subject.
 - Every target-language word uses [[native script|romanization]], unless the
   question tests how it is read or written.
 - Target-language text inside an English sentence has one pair of quotation
