@@ -267,22 +267,6 @@ def answer_question(
     mastery = topic_mastery.mastery
 
     if (correct):
-        # Increase mastery by 4% and unlock next topic if mastery reaches 15% or more.
-        next_topic_mastery = db.scalar(
-            select(TopicMastery)
-            .join(Topic)
-            .where(
-                TopicMastery.user_id == current_user.id,
-                Topic.document_id == topic_mastery.topic.document_id,
-                Topic.order_index == topic_mastery.topic.order_index + 1
-            )
-        )
-
-
-        if (next_topic_mastery and mastery + 4 >= 15):
-            next_topic_mastery.status = "unlocked"
-
-
         topic_mastery.mastery = min(
             mastery + 4,
             100
@@ -298,6 +282,22 @@ def answer_question(
     db.commit()
 
     if (finished):
+        # Unlock the next topic if user has finished doing questions for current topic.
+        next_topic_mastery = db.scalar(
+            select(TopicMastery)
+            .join(Topic)
+            .where(
+                TopicMastery.user_id == current_user.id,
+                Topic.document_id == topic_mastery.topic.document_id,
+                Topic.order_index == topic_mastery.topic.order_index + 1
+            )
+        )
+
+
+        if (next_topic_mastery and next_topic_mastery.status != "unlocked"):
+            next_topic_mastery.status = "unlocked"
+
+
         return {
             "correct": correct,
             "answer": question.answer,
