@@ -279,8 +279,6 @@ def answer_question(
         )
 
 
-    db.commit()
-
     if (finished):
         # Unlock the next topic if user has finished doing questions for current topic.
         next_topic_mastery = db.scalar(
@@ -298,6 +296,9 @@ def answer_question(
             next_topic_mastery.status = "unlocked"
 
 
+    db.commit()
+
+    if (finished):
         return {
             "correct": correct,
             "answer": question.answer,
@@ -306,6 +307,7 @@ def answer_question(
 
 
     else:
+        
         return {
             "correct": correct,
             "answer": question.answer,
