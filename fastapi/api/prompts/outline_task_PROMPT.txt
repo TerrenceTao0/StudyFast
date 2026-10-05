@@ -1,7 +1,12 @@
 Generate only the course title and the ordered list of topics.
 The message above is the learner's request. Plan the whole course from it.
 If the request is rejected, the title is "Rejected" and the list of topics is empty.
-Otherwise, generate at least 5 topics.
+Otherwise, generate between 5 and 100 topics, sized to the scope of the request.
+A full beginner-to-advanced course on a broad subject should use all 100, or
+very close to it.
+Each topic gets only 10 flashcards and 20 questions, so a set of items that must
+each be memorized, such as the characters of a writing system, needs a separate
+topic for about every 10 items.
 The flashcards and questions for each topic are generated separately, from only the
 topic name and this outline, so make each topic name specific enough to show what
 the topic covers.

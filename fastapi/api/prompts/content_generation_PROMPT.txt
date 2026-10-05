@@ -62,9 +62,27 @@ TOPIC REQUIREMENTS
   Do not use one broad topic called "Integration" if the course should teach
   integration by substitution, integration by parts, and partial fractions.
   Those should be separate topics.
-- Generate as many topics as the requested scope genuinely needs so it feels
-  like a genuine course, but never split or pad topics just to increase the
-  count.
+- Each topic gets exactly 10 flashcards and 20 questions, so one topic can
+  only teach about 10 items that each have to be memorized.
+- When the subject contains a set of items that must each be learned
+  individually, such as the characters of a writing system, split the set
+  into enough topics to teach every item, at about 10 items per topic. Name
+  each of these topics after the group or range it covers, so the topics do
+  not overlap, but do not list every item in the name.
+- Example:
+  Hiragana has 46 basic characters, so it needs about five topics of around
+  10 characters each, named after the rows they cover, never one topic for
+  all of hiragana.
+- If a set is too large to teach in full, such as the thousands of kanji,
+  give it several topics on its most common items instead of one topic.
+- A course can have up to 100 topics. Size the number of topics to the scope
+  of the request.
+- A broad subject taken from beginner to advanced, such as a whole language,
+  a programming language, or a full school subject, contains far more than
+  100 independently learnable topics. It must use all 100, or very close to
+  it. A course like this with only 10 to 30 topics is far too shallow.
+- A narrow request needs fewer topics. Give it as many as its scope genuinely
+  needs, and never split or pad topics just to increase the count.
 - Every topic must teach knowledge of the subject itself. Do not create topics
   about the course or about studying, such as what the course covers, study
   tips, or recommended learning resources.
