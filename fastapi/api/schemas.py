@@ -26,3 +26,11 @@ class ReviewRequest(BaseModel):
 
 class UserAnswer(BaseModel):
     user_answer: str
+
+
+class PromptRequest(BaseModel):
+    user_prompt: str = Field(
+        min_length=5,
+        max_length=255
+    )
+

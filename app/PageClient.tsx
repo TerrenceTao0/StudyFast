@@ -122,7 +122,10 @@ export default function LandingPage() {
             </div>
 
             <div className="flex flex-col gap-1.5 group">
-                <label htmlFor="password" className="text-sm font-bold text-accent group-focus-within:text-primary transition-colors">
+                <label 
+                  htmlFor="password" 
+                  className="text-sm font-bold text-accent group-focus-within:text-primary transition-colors"
+                >
                     Password
                 </label>
 

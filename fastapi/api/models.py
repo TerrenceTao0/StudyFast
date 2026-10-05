@@ -155,7 +155,16 @@ class Document(Base):
     )
 
 
-    # Statuses - pending, processing, ready
+    # Source - file, prompt
+    source: Mapped[str] = mapped_column(
+        String(20),
+        nullable=False,
+        default="file",
+        server_default="file"
+    )
+
+
+    # Statuses - pending, processing, ready, failed
     status: Mapped[str] = mapped_column(
         String(20),
         nullable=False,

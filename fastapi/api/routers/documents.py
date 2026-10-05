@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 
 from database import get_db
 from models import Document, User, Topic, TopicMastery
+from schemas import PromptRequest
 from routers.auth import get_current_user
 from services.document_processing import UPLOAD_PATH, UnreadableDocumentError, extract_text
 
@@ -79,6 +80,63 @@ def get_topics_and_document_mastery(current_user, document):
 
     return topics, document_mastery
     
+
+##
+
+@router.post(
+    "/prompt",
+    status_code=status.HTTP_201_CREATED
+)
+def prompt(
+    user_prompt: PromptRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    user_uploads_today = uploads_today(current_user)
+
+    if (user_uploads_today >= MAX_DAILY_UPLOADS_FREE):
+        raise HTTPException(
+            status_code=429,
+            detail="You reached your daily upload limit."
+        ) 
+
+
+    text = user_prompt.user_prompt
+
+    document = Document(
+        user_id=current_user.id,
+        original_filename="[Prompt]",
+        size_bytes=len(text.encode()),
+        text=text,
+        source="prompt"
+    )
+
+
+    current_user.last_upload = datetime.now(timezone.utc)
+    current_user.uploads = user_uploads_today + 1
+
+    try:
+        db.add(document)
+        db.commit()
+        db.refresh(document)
+
+    except Exception:
+        db.rollback()
+
+        raise
+
+
+    # Let AI Document processing be done in the background by a worker as it's expensive.
+    document_queue.enqueue(
+        process_document,
+        document.id,
+        job_timeout=300,
+        retry=Retry(
+            max=3,
+            interval=[10, 30, 60]
+        )
+    )
+
 
 @router.post(
     "/upload",
@@ -341,6 +399,7 @@ def generate_topic_content(
             TopicMastery.user_id == current_user.id
         )
     )
+
 
     # Locked topics can't be generated so AI budget is only spent on topics the user has reached.
     if (mastery_record is None or mastery_record.status == "locked"):

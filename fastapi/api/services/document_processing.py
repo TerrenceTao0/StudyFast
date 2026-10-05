@@ -20,10 +20,16 @@ SECTION_LENGTH = 3000
 
 PROMPTS_PATH = Path(__file__).resolve().parent.parent / "prompts"
 
-content_generation_prompt = (PROMPTS_PATH / "content_generation.txt").read_text(encoding="utf-8")
+content_generation = (PROMPTS_PATH / "content_generation.txt").read_text(encoding="utf-8")
+content_generation_PROMPT = (PROMPTS_PATH / "content_generation_PROMPT.txt").read_text(encoding="utf-8")
+
 OUTLINE_TASK = (PROMPTS_PATH / "outline_task.txt").read_text(encoding="utf-8")
 TOPIC_TASK = (PROMPTS_PATH / "topic_task.txt").read_text(encoding="utf-8")
 
+OUTLINE_TASK_PROMPT = (PROMPTS_PATH / "outline_task_PROMPT.txt").read_text(encoding="utf-8")
+TOPIC_TASK_PROMPT = (PROMPTS_PATH / "topic_task_PROMPT.txt").read_text(encoding="utf-8")
+
+# Rejected material has the title "Rejected" and no topics, so topics has no minimum.
 OUTLINE_SCHEMA = {
     "type": "object",
     "properties": {
@@ -33,8 +39,7 @@ OUTLINE_SCHEMA = {
         },
         "topics": {
             "type": "array",
-            "minItems": 5,
-            "maxItems": 20,
+            "maxItems": 100,
             "items": {
                 "type": "object",
                 "properties": {
@@ -52,6 +57,40 @@ OUTLINE_SCHEMA = {
                 "required": [
                     "name",
                     "sections"
+                ],
+                "additionalProperties": False
+            }
+        }
+    },
+    "required": [
+        "title",
+        "topics"
+    ],
+    "additionalProperties": False
+}
+
+
+# Outline of a course generated from a prompt, which has no document sections to display.
+# A rejected prompt has the title "Rejected" and no topics, so topics has no minimum.
+OUTLINE_SCHEMA_PROMPT = {
+    "type": "object",
+    "properties": {
+        "title": {
+            "type": "string",
+            "maxLength": 100
+        },
+        "topics": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name"
                 ],
                 "additionalProperties": False
             }
@@ -248,11 +287,11 @@ def split_into_sections(text: str) -> list[str]:
     return sections
 
 
-def generate(material: str, task: str, schema_name: str, schema: dict) -> dict:
+def generate(instructions, material: str, task: str, schema_name: str, schema: dict) -> dict:
     response = client.responses.create(
         model="gpt-5.6-luna",
 
-        instructions=content_generation_prompt,
+        instructions=instructions,
 
         input=[
             {
@@ -279,6 +318,21 @@ def generate(material: str, task: str, schema_name: str, schema: dict) -> dict:
     return json.loads(response.output_text)
 
 
+def generate_outline_from_prompt(prompt: str) -> dict:
+    outline = generate(content_generation_PROMPT, prompt, OUTLINE_TASK_PROMPT, "course_outline", OUTLINE_SCHEMA_PROMPT)
+
+    return {
+        "title": outline["title"],
+        "topics": [
+            {
+                "name": topic["name"],
+                "material": prompt
+            }
+            for topic in outline["topics"]
+        ]
+    }
+
+
 def generate_outline(text: str) -> dict:
     if (not text.strip()):
         raise ValueError("No text found.")
@@ -293,17 +347,19 @@ def generate_outline(text: str) -> dict:
         for i, section in enumerate(sections, start=1)
     )
 
-    outline = generate(numbered_material, OUTLINE_TASK, "course_outline", OUTLINE_SCHEMA)
+    outline = generate(content_generation, numbered_material, OUTLINE_TASK, "course_outline", OUTLINE_SCHEMA)
     topics = []
 
     for topic in outline["topics"]:
         # Ignore section ids that don't exist, and fall back to the whole text if none are left.
-        ids = sorted({
-            i
-            for i in topic["sections"]
-            if 1 <= i <= len(sections)
-        })
+        ids = []
 
+        for section_id in topic["sections"]:
+            if (1 <= section_id <= len(sections)):
+                ids.append(section_id)
+
+
+        ids = sorted(set(ids))
 
         if (ids):
             selected_sections = []
@@ -330,11 +386,19 @@ def generate_outline(text: str) -> dict:
     }
 
 
-def generate_topic(material: str, topic: str, outline: str) -> dict:
-    task = TOPIC_TASK.format(
+def generate_topic(material: str, topic: str, outline: str, source: str) -> dict:
+    chosen_prompt = TOPIC_TASK 
+    chosen_instruct = content_generation
+
+    if (source == "prompt"):
+        chosen_prompt = TOPIC_TASK_PROMPT
+        chosen_instruct = content_generation_PROMPT
+
+
+    task = chosen_prompt.format(
         topic=topic,
         outline=outline
     )
 
-    return generate(material, task, "topic_content", TOPIC_SCHEMA)
+    return generate(chosen_instruct, material, task, "topic_content", TOPIC_SCHEMA)
 

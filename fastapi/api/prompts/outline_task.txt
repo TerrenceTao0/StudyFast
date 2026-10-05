@@ -1,4 +1,6 @@
 Generate only the course title and the ordered list of topics.
+If the material is rejected, the title is "Rejected" and the list of topics is empty.
+Otherwise, generate at least 5 topics.
 The material is split into numbered sections. For each topic, list the id of every
 section containing material needed to teach it, including definitions or examples
 it builds on. A section can belong to more than one topic.

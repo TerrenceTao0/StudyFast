@@ -1,0 +1,12 @@
+Generate the flashcards and multiple-choice questions for this one topic only:
+{topic}
+
+The message above is the learner's request that the course was built from.
+
+The full course outline, for context:
+{outline}
+
+The other topics are generated separately, so only cover this topic and do not
+test the content of other topics except where this topic builds on it.
+Pitch the content at the level of this topic's position in the outline. It can
+assume the learner has completed the earlier topics, but not the later ones.

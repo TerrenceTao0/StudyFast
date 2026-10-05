@@ -268,13 +268,13 @@ def answer_question(
 
     if (correct):
         topic_mastery.mastery = min(
-            mastery + 4,
+            mastery + 3,
             100
         )
 
     else:
         topic_mastery.mastery = max(
-            mastery - 2,
+            mastery - 3,
             0
         )
 
