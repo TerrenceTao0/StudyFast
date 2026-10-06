@@ -11,9 +11,10 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
 from database import get_db
-from models import User
+from models import User, StudyDay
 from schemas import RegisterRequest, LoginRequest
 from hashing import hash_password, verify_password, create_access_token, decode_access_token
+from datetime import datetime, timedelta, timezone
 
 ##
 
@@ -283,4 +284,24 @@ def logout(response: Response):
         path="/"
     )
 
+
+@router.get("/activity")
+def activity(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    since = datetime.now(timezone.utc).date() - timedelta(days=371)
+
+    days = db.scalars(
+        select(StudyDay.day)
+        .where(
+            StudyDay.user_id == current_user.id,
+            StudyDay.day >= since 
+        )
+        .order_by(StudyDay.day)
+    ).all()
+
+    return {
+        "days": [day.isoformat() for day in days] 
+    } 
 

@@ -57,6 +57,32 @@ class User(Base):
     )
 
 
+class StudyDay(Base):
+    __tablename__ = "study_days"
+
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "day",
+            name="user_study_day"
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(
+        primary_key=True
+    )
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"),
+        nullable=False
+    )
+
+    day: Mapped[date] = mapped_column(
+        Date,
+        nullable=False
+    )
+
+
 class TopicMastery(Base):
     __tablename__ = "topic_mastery"
 

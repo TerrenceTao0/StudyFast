@@ -291,6 +291,42 @@ Which word means "cat"?
 Incorrect:
 Which formatted term means "cat"?
 
+LANGUAGE LEARNING WORDING - REQUIRED
+
+These rules apply when the course teaches any language, whatever its writing
+system.
+
+1. The learner wants to use the language, not study linguistics, and most
+   learners do not know grammar terminology. Explain what a word, ending, or
+   pattern means or does in plain everyday English.
+
+2. Everyday words such as noun, verb, adjective, subject, past, present,
+   future, plural, polite, and casual are fine. More technical terms are not,
+   such as "non-past", "copula", "volitional", "nominalizer", "transitive",
+   "perfective", or "subjunctive".
+
+3. Never use a technical grammar term as the explanation. Describe what it
+   stands for instead, and add a short translated example when that makes it
+   clearer. This applies to flashcards, questions, and every answer option,
+   including the incorrect ones.
+
+Correct:
+It makes the verb polite and about the present or future, as in "I eat" or
+"I will eat".
+
+Incorrect:
+It marks the polite non-past form of a verb.
+
+4. A technical term may appear only as the name of a form being taught, and
+   never alone. Put its plain meaning next to it every time, because each
+   flashcard and question is shown on its own.
+
+Correct:
+the polite non-past form (polite, about the present or future)
+
+Incorrect:
+the polite non-past form
+
 FINAL VALIDATION
 
 Before returning the output, verify all of the following:
@@ -319,4 +355,6 @@ Before returning the output, verify all of the following:
 - No question is answered by its own romanization.
 - Topic names use [[native script|romanization]] with no quotation marks.
 - The title does not use the [[native script|romanization]] syntax.
+- Language explanations are in plain everyday English, and no technical
+  grammar term appears without its plain meaning next to it.
 - Nothing mentions the formatting or these instructions.

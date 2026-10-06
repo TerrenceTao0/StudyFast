@@ -1,3 +1,5 @@
+from rq import get_current_job
+
 from database import SessionLocal
 from models import Document, Topic, Flashcard, Question, TopicMastery
 from services import document_processing
@@ -90,14 +92,23 @@ def process_document(document_id: int):
         db.rollback()
 
         document = db.get(
-            Document, 
-            document_id 
+            Document,
+            document_id
         )
 
+        job = get_current_job()
 
         if (document is not None):
-            document.status = "pending"
-            document.title = "Pending..."
+            # RQ only retries a job that has retries left, so after the last one the document is failed instead of pending forever.
+            if (job is not None and job.should_retry):
+                document.status = "pending"
+                document.title = "Pending..."
+
+            else:
+                document.status = "failed"
+                document.title = "Failed"
+
+
             db.commit()
 
 

@@ -6,7 +6,7 @@ from job_queue import document_queue
 from worker.tasks import process_document, process_topic
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
-from sqlalchemy import select
+from sqlalchemy import and_, func, select
 from sqlalchemy.orm import Session, selectinload
 
 from datetime import datetime, timezone
@@ -295,28 +295,40 @@ def get_documents(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    # Polled every second while a document is processing, so mastery is averaged in the database instead of loading every topic and mastery row.
     query = (
-        select(Document)
-        .options(
-            selectinload(Document.topics)
-            .selectinload(Topic.mastery_records)
+        select(
+            Document.id,
+            Document.title,
+            Document.size_bytes,
+            Document.status,
+            func.avg(TopicMastery.mastery).label("mastery")
+        )
+        .select_from(Document)
+        .outerjoin(Topic)
+        .outerjoin(
+            TopicMastery,
+            and_(
+                TopicMastery.topic_id == Topic.id,
+                TopicMastery.user_id == current_user.id
+            )
         )
         .where(Document.user_id == current_user.id)
+        .group_by(Document.id)
         .order_by(Document.uploaded_at.desc())
     )
 
-    documents = db.scalars(query).all()
     documents_data = []
 
-    for document in documents:
-        topics, document_mastery = get_topics_and_document_mastery(current_user, document)
-
+    for document in db.execute(query):
         data = {
             "id": document.id,
             "title": document.title,
             "size_bytes": document.size_bytes,
             "status": document.status,
-            "mastery": document_mastery
+
+            # A document without topics has no mastery to average.
+            "mastery": round(document.mastery or 0.0, 1)
         }
 
         documents_data.append(data)

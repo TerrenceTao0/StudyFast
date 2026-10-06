@@ -179,18 +179,21 @@ function Create(
 {
     onUpload,
     onPromptUpload,
+    onClose,
     prompt,
     setPrompt,
 } : {
     onUpload: (event: React.ChangeEvent<HTMLInputElement>) => void,
     onPromptUpload: (prompt: string) => void,
+    onClose: () => void,
     prompt: string,
     setPrompt: React.Dispatch<React.SetStateAction<string>>
-}   
+}
 ) {
     return (
         <div
             className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50 p-4"
+            onClick={onClose}
         >
             <div
                 className="card p-6 w-full max-w-150 flex flex-col gap-6 h-100"
@@ -499,7 +502,8 @@ export default function Home() {
                 <Create 
                     onUpload={uploadFile} 
                     onPromptUpload={uploadPrompt}
-                    prompt={prompt} 
+                    onClose={() => setOpenCreate(false)}
+                    prompt={prompt}
                     setPrompt={setPrompt} 
                 />
             )}

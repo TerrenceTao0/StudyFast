@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from sqlalchemy.dialects.postgresql import insert
 
 from datetime import datetime, timezone, timedelta, date
 
 import random
 
 from database import get_db
-from models import User, Topic, Question, Document, TopicMastery, QuestionSession
+from models import User, Topic, Question, Document, TopicMastery, QuestionSession, StudyDay
 from schemas import UserAnswer
 from routers.auth import get_current_user
 
@@ -280,7 +281,18 @@ def answer_question(
 
 
     if (finished):
-        # Unlock the next topic if user has finished doing questions for current topic.
+        # Add a new streak day to the user. Model constraints ensure uniqueness so a check is not needed.
+        db.execute(
+            insert(StudyDay)
+            .values(
+                user_id=current_user.id,
+                day=datetime.now(timezone.utc).date()
+            )
+            .on_conflict_do_nothing()
+        )
+
+
+        # Unlock the next topic if user has finished doing the question task for current topic.
         next_topic_mastery = db.scalar(
             select(TopicMastery)
             .join(Topic)
