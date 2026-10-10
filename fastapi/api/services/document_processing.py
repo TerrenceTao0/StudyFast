@@ -103,9 +103,13 @@ OUTLINE_SCHEMA_PROMPT = {
     "additionalProperties": False
 }
 
+# The lesson is first so the model writes it before the flashcards and questions that are based on it.
 TOPIC_SCHEMA = {
     "type": "object",
     "properties": {
+        "lesson": {
+            "type": "string"
+        },
         "flashcards": {
             "type": "array",
             "items": {
@@ -168,6 +172,7 @@ TOPIC_SCHEMA = {
         }
     },
     "required": [
+        "lesson",
         "flashcards",
         "question_bank"
     ],

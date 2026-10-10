@@ -6,4 +6,4 @@ section containing material needed to teach it, including definitions or example
 it builds on. A section can belong to more than one topic.
 A section that is only about the course or the document itself, not the subject,
 does not need to belong to any topic.
-The flashcards and questions for each topic are generated separately, from only its sections.
+The lesson, flashcards, and questions for each topic are generated separately, from only its sections.

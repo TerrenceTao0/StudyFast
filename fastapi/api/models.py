@@ -250,6 +250,13 @@ class Topic(Base):
         deferred=True
     )
 
+
+    lesson: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
+        deferred=True
+    )
+
     document: Mapped["Document"] = relationship(
         back_populates="topics"
     )

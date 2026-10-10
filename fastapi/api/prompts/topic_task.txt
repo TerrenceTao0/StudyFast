@@ -1,4 +1,4 @@
-Generate the flashcards and multiple-choice questions for this one topic only:
+Generate the lesson, flashcards, and multiple-choice questions for this one topic only:
 {topic}
 
 The material above is only the part of the document relevant to this topic.
@@ -7,4 +7,6 @@ The full course outline, for context:
 {outline}
 
 The other topics are generated separately, so only cover this topic and do not
-test the content of other topics except where this topic builds on it.
+teach or test the content of other topics except where this topic builds on it.
+Write the lesson first, as a simplified version of what the material above says
+about this topic. Then write the flashcards and questions from the lesson.

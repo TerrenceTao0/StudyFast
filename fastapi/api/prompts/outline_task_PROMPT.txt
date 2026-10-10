@@ -7,6 +7,6 @@ very close to it.
 Each topic gets only 10 flashcards and 20 questions, so a set of items that must
 each be memorized, such as the characters of a writing system, needs a separate
 topic for about every 10 items.
-The flashcards and questions for each topic are generated separately, from only the
-topic name and this outline, so make each topic name specific enough to show what
-the topic covers.
+The lesson, flashcards, and questions for each topic are generated separately, from
+only the topic name and this outline, so make each topic name specific enough to
+show what the topic covers.

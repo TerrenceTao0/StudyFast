@@ -7,6 +7,8 @@ from services import document_processing
 ##
 
 def add_topic_content(topic, content):
+    topic.lesson = content["lesson"]
+
     for flashcard_data in content["flashcards"]:
         topic.flashcards.append(
             Flashcard(

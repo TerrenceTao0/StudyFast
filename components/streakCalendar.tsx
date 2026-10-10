@@ -18,7 +18,7 @@ function describeDay(date: string, active: boolean) {
 
 //
 
-// days lists the UTC dates ("YYYY-MM-DD") the user was active on.
+// days lists the UTC dates ("YYYY-MM-DD") a question task was completed.
 export default function StreakCalendar({ days }: { days: string[] }) {
     const active = new Set(days)
 
@@ -39,7 +39,6 @@ export default function StreakCalendar({ days }: { days: string[] }) {
     }
 
 
-    const dates = weeks.flat()
     const months = weeks.map((week) => new Date(week[0]).getUTCMonth())
 
     let total = 0
@@ -47,23 +46,31 @@ export default function StreakCalendar({ days }: { days: string[] }) {
     let current = 0
     let run = 0
 
-    dates.forEach((date, i) => {
-        if (active.has(date)) {
-            total += 1
+    // Counted from the earliest day given, not just the squares shown, so a streak can be longer than a year.
+    const first = Math.min(start, ...days.map((day) => Date.parse(day)))
+
+    for (let time = first; time <= today; time += DAY_MS) {
+        if (active.has(new Date(time).toISOString().slice(0, 10))) {
             run += 1
 
-        } else {
+            // Only days on the grid count towards "in the last year".
+            if (time >= start) {
+                total += 1
+            }
+        } 
+        else {
             run = 0
         }
 
 
         longest = Math.max(longest, run)
 
+        
         // Today only breaks the streak once it ends with no activity.
-        if (run > 0 || i < dates.length - 1) {
+        if (run > 0 || time < today) {
             current = run
         }
-    })
+    }
 
 
     return (

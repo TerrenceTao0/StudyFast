@@ -290,13 +290,10 @@ def activity(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    since = datetime.now(timezone.utc).date() - timedelta(days=371)
-
     days = db.scalars(
         select(StudyDay.day)
         .where(
-            StudyDay.user_id == current_user.id,
-            StudyDay.day >= since 
+            StudyDay.user_id == current_user.id
         )
         .order_by(StudyDay.day)
     ).all()

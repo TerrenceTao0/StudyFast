@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import ProgressBar from "@/components/progressBar"
 import Link from "next/link"
 import NoticePrompt from "@/components/noticePrompt"
+import Lesson from "@/components/lesson"
 import FlashcardTask, { type Flashcard } from "@/components/flashcardTask"
 import QuestionTask, { type QuestionData, type QuestionResponse } from "@/components/questionTask"
 
@@ -14,6 +15,12 @@ import QuestionTask, { type QuestionData, type QuestionResponse } from "@/compon
 type Data = {
     completion: number, 
     seconds_left: number
+}
+
+
+type LessonData = {
+    name: string,
+    lesson: string | null
 }
 
 //
@@ -98,12 +105,16 @@ export default function Topic() {
     const [questionResponse, setQuestionResponse] = useState<QuestionResponse>()
     const [selectedAnswer, setSelectedAnswer] = useState("")
 
-    {/* 
-        getFlashcard also checks if user has finished flashcard tasks. 
+    // Cleared when the user presses next, which reveals the task underneath.
+    const [lesson, setLesson] = useState<LessonData>()
+
+    {/*
+        getFlashcard also checks if user has finished flashcard tasks.
         If user has finished flashcard tasks, question task will start.
+        The lesson is loaded first so the task never shows before it.
     */}
     useEffect(() => {
-        getFlashcard()
+        getLesson().then(getFlashcard)
     }, [])
 
 
@@ -254,6 +265,27 @@ export default function Topic() {
     }
 
 
+    async function getLesson() {
+        try {
+            const response = await fetch(
+                `/api/documents/${documentId}/topics/${topicId}/lesson`,
+                {
+                    credentials: "include"
+                }
+            )
+
+
+            if (response.ok) {
+                const json = await response.json()
+                setLesson(json)
+            }
+        }
+        catch {
+
+        }
+    }
+
+
     async function getFlashcard() {
         try {
             const response = await fetch(
@@ -344,8 +376,8 @@ export default function Topic() {
     return (
         <>
             <div className="min-h-screen flex flex-col items-center px-4 pt-6 pb-10">
-                {/* Break time has its own progress bar and back button. */}
-                {!breakData && (
+                {/* Break time has its own progress bar and back button, unless the lesson is covering it. */}
+                {(!breakData || lesson?.lesson) && (
                     <div className="w-full max-w-2xl flex items-center gap-4 h-10">
                         <Link
                             href={`/documents/${documentId}/topics`}
@@ -362,7 +394,13 @@ export default function Topic() {
                 )}
 
                 <div className="flex-1 w-full max-w-2xl flex flex-col items-center justify-center py-8">
-                    {currentCard ? (
+                    {lesson?.lesson ? (
+                        <Lesson
+                            name={lesson.name}
+                            lesson={lesson.lesson}
+                            onNext={() => setLesson(undefined)}
+                        />
+                    ) : currentCard ? (
                         <FlashcardTask
                             card={currentCard}
                             cardState={cardState}

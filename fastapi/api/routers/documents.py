@@ -373,6 +373,38 @@ def get_document(
     }
 
 
+@router.get("/{document_id}/topics/{topic_id}/lesson")
+def get_lesson(
+    document_id: int,
+    topic_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    query = (
+        select(Topic)
+        .join(Document)
+        .where(
+            Topic.id == topic_id,
+            Topic.document_id == document_id,
+            Document.user_id == current_user.id
+        )
+    )
+
+    topic = db.scalar(query)
+
+    if (topic is None):
+        raise HTTPException(
+            status_code=404,
+            detail="Topic not found."
+        )
+
+
+    return {
+        "name": topic.name,
+        "lesson": topic.lesson
+    }
+
+
 @router.post(
     "/{document_id}/topics/{topic_id}/generate",
     status_code=status.HTTP_202_ACCEPTED
